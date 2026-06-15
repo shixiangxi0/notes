@@ -20,7 +20,7 @@ const config = {
   // },
 
   url: 'https://shixiangxi.com',
-  baseUrl: '/',
+  baseUrl: '/notes/',
 
   onBrokenLinks: 'throw',
 
