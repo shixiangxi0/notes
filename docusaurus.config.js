@@ -19,8 +19,8 @@ const config = {
   //   v4: true,
   // },
 
-  url: 'https://shixiangxi.com',
-  baseUrl: '/notes/',
+  url: 'https://notes.shixiangxi.com',
+  baseUrl: '/',
 
   onBrokenLinks: 'throw',
 
