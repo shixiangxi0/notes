@@ -62,11 +62,7 @@ const config = {
             position: 'left',
             label: '目录',
           },
-          {
-            to: '/about',
-            label: '关于',
-            position: 'right',
-          },
+
         ],
       },
       footer: {
