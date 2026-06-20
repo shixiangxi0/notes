@@ -30,6 +30,7 @@ const sidebars = {
     {
       type: 'category',
       label: labels.dualWorldTheory,
+      collapsed: false,
       link: {
         type: 'doc',
         id: 'dual-world-theory/前言/index',
@@ -38,6 +39,7 @@ const sidebars = {
         {
           type: 'category',
           label: labels.preface,
+          collapsed: false,
           link: {
             type: 'doc',
             id: 'dual-world-theory/前言/index',
@@ -49,6 +51,7 @@ const sidebars = {
         {
           type: 'category',
           label: labels.theory,
+          collapsed: false,
           items: [
             'dual-world-theory/理论/双世界理论',
             'dual-world-theory/理论/因果传播网络',
@@ -58,6 +61,7 @@ const sidebars = {
         {
           type: 'category',
           label: labels.practice,
+          collapsed: false,
           items: [
             'dual-world-theory/实践/游戏架构实践',
           ],
@@ -67,6 +71,7 @@ const sidebars = {
     {
       type: 'category',
       label: labels.about,
+      collapsed: false,
       items: [
         'about/关于双世界',
         'about/关于作者',
