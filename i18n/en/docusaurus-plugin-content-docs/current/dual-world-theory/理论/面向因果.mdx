@@ -1,0 +1,116 @@
+---
+sidebar_position: 3
+slug: /dual-world-theory/core-concepts
+---
+
+# Causality-Oriented
+
+**Causality-Oriented** modeling treats events, facts, causality, and adjudication as the smallest meaningful units for organizing a system.
+
+This stands in contrast to object-oriented modeling:
+
+| Object-Oriented | Causality-Oriented |
+|---|---|
+| Objects, classes, and methods are the primary units | Events, facts, and adjudication rules are the primary units |
+| Bottom-up: define objects first, then manage event flow | Top-down: define how facts are formed, then derive representation |
+| State is scattered across private object space | State is derived from the Causal Layer; the Perception Layer holds only projections |
+| Spatial structure: encapsulation, inheritance, polymorphism, composition | Temporal structure: Event -> Adjudication -> Fact -> Propagation |
+| Who owns what? | Who caused what? |
+
+**Causality-Oriented** is most useful for systems that run continuously, interact constantly, and must keep absorbing change.
+
+It is grounded in a relational ontology rather than a state ontology.
+
+## Two-Layer Model
+
+The model divides a system into two cooperating layers: the **Causal Layer** and the **Perception Layer**.
+
+### Causal Layer
+
+The Causal Layer is the system's **event interpretation and adjudication engine**.
+
+It maintains three core assets:
+
+- **Pending Events**: semantic events that have entered the system and are waiting to be interpreted
+- **History of Facts**: the sequence of relational facts already admitted into history
+- **Adjudication Rules**: the rules used to interpret events, resolve conflicts, and compute outcomes
+
+When modeling the Causal Layer, the primary principle is always **relation first**: maintain the rules that produce state changes, rather than treating state itself as the core asset.
+
+### Perception Layer
+
+The Perception Layer is the reactive projection of world facts. It is responsible for:
+
+- Consuming facts and turning them into projections
+- Detecting external change and packaging it into semantic events
+- Organizing continuous presentation, local feedback, and user experience
+
+The Perception Layer may hold local state, such as a panel being expanded, animation progress, whether a notification has been read, or camera tweening. These states are derived from facts and do not themselves constitute world facts.
+
+The Perception Layer may also present predicted feedback ahead of adjudication in order to improve responsiveness. For example:
+
+```text
+Player presses attack -> Perception Layer immediately plays an attack animation
+                     -> reports attack_requested -> Causal Layer adjudicates
+                     -> Causal Layer returns damage_applied -> Perception Layer corrects the presentation
+```
+
+Animation may run ahead, but facts such as damage and death only truly take effect after the Causal Layer confirms them. If a local state can influence future world facts, it must be submitted to the Causal Layer as a semantic event.
+
+### Interaction Between Layers
+
+```text
+External input -> Perception Layer detects -> Semantic event -> Causal Layer adjudicates -> New fact -> Perception Layer consumes -> Presented to the outside world
+```
+
+Architecturally, the Perception Layer does not directly rewrite world facts. It can only request adjudication through semantic events. The Causal Layer does not directly handle presentation; it publishes facts for the Perception Layer to consume.
+
+## Boundary Criteria
+
+To decide which layer a feature belongs to, ask:
+
+1. **Does it affect future world facts?**
+2. **Does it need to enter history, remain traceable, or be shared across multiple nodes?**
+3. **If it were lost or rolled back, would it cause a serious bug?**
+
+A simpler rule of thumb is this: the Causal Layer handles discrete relational changes, while the Perception Layer handles continuous projection and feedback.
+
+### Decision Dimensions
+
+| Dimension | Causal Layer | Perception Layer |
+|---|---|---|
+| Authoritative facts / local presentation | Centralized adjudication, traceability, determinism | Low-latency feedback, local autonomy, safe to discard |
+| Causal adjudication / state projection | Many conflicts, explicit conditions, ordering concerns | Mostly stable relations, driven by local snapshots and derived state |
+| Temporal order / spatial organization | Sequence, windows, concurrency, preemption | Structure, layout, composition, hierarchy |
+| Global convergence / local response | All nodes must eventually face the same factual version | Different nodes may temporarily keep different projections and timing |
+
+The Causal Layer is discrete; the Perception Layer is continuous. The Causal Layer owns authoritative facts; the Perception Layer owns projection and presentation.
+
+### Mapping to Different Systems
+
+Applying these dimensions to different kinds of systems gives a rough mapping like this:
+
+| Scenario | Characteristics | Typical solution |
+|---|---|---|
+| Online game combat | High authority, strong global consistency, rich local feedback | Authoritative server as Causal Layer; clients as Perception Layer with prediction; deterministic event sync; temporary state windows; GGPO / rollback |
+| E-commerce ordering | High authority, medium real-time pressure, strong traceability | Event Sourcing + CQRS; Saga / workflow; eventual consistency plus compensation |
+| Real-time collaborative whiteboard | High local autonomy, strong global convergence, brief divergence acceptable | CRDT / OT for local editing; central service maintains canonical history and convergence; reactive UI subscribes to fact updates |
+| Traditional CMS | High local state density, low causal density, medium authority | Conventional MVC / CRUD; no elaborate Causal Layer required |
+
+### Common Pitfall
+
+Trying to guarantee synchronization by moving all state into the Causal Layer usually backfires. The Causal Layer swells into a new state center and the entire point of layering is lost. The Causal Layer should maintain only the versioned relational facts; the Perception Layer should remain free to interpolate and predict between them.
+
+## Relation to Other Concepts
+
+- **The Causal Layer is not the same as Event Sourcing**: Event Sourcing assumes that events are already facts and focuses on storage and replay. The Causal Layer treats events as inputs that still need interpretation. They may conflict, they may be invalid, and they only become facts after adjudication.
+- **The Perception Layer is not the same as the View in MVC**: a View is usually passive. The Perception Layer also detects input, segments change into events, and organizes continuous feedback without directly altering world facts.
+- **Eventual Causal Consistency is not the same as eventual consistency**: eventual consistency is primarily about state convergence. Eventual Causal Consistency is about participants eventually facing the same factual version of the world.
+
+---
+
+## Related Reading
+
+- [Dual World Theory](/docs/dual-world-theory/theory): A deeper philosophical account of the two-layer model through entropy, order, and explainability.
+- [Causal Propagation Network](/docs/dual-world-theory/causal-layer-mechanism): Events, rules, facts, and the sources of complexity inside the Causal Layer.
+- [Game Architecture Practice](/docs/dual-world-theory/practice): How the two-layer model can be implemented in a game engine.

@@ -1,0 +1,363 @@
+---
+sidebar_position: 1
+slug: /dual-world-theory/practice
+---
+
+# Game Architecture Practice
+
+## What the Causal Layer Does in Games
+
+In a game, the Causal Layer should implement a **minimal authoritative adjudication mechanism**. It does not care about rendering, animation, or local physics as presentation. It cares about the formation of authoritative facts.
+
+After an attack is initiated, what matters to the Causal Layer is something like:
+
+```text
+attack_requested -> buff_applied -> damage_applied -> hp_depleted -> entity_died
+```
+
+These are discrete, explainable, and recordable world facts.
+
+Its core engineering requirements are:
+
+- **Adjudication**: every change that can influence future world facts must eventually be ordered and judged
+- **Determinism**: the same initial state and the same causal input should always produce the same outcome
+
+## What the Perception Layer Does in Games
+
+In games, the Perception Layer is a **reactive runtime**. It subscribes to facts published by the Causal Layer, derives local state, drives rendering, animation, physics feedback, and interaction, and translates external input into semantic events at the boundary.
+
+It is responsible for:
+
+- Subscribing to world facts
+- Deriving local state such as animation, camera, and UI
+- Organizing continuous presentation
+- Detecting player input and local collisions
+- Reporting semantic events back to the Causal Layer
+
+It may be highly autonomous, but it does not own the authority to establish world facts.
+
+---
+
+## Lightweight Computation and High-Fidelity Local Simulation
+
+A common misunderstanding is that synchronization requires putting all state into the Causal Layer. That turns the Causal Layer into a bloated new state center and defeats the point of the separation.
+
+### Lightweight Computation
+
+Lightweight computation is the **minimum authoritative computation** required to form world facts. It belongs to the Causal Layer. It is data-driven and outcome-oriented; it does not attempt to reproduce every continuous process in full detail.
+
+For example:
+
+- Whether a bullet actually hits
+- Whether an attack resolves as a hit, dodge, or block
+- The state transition that occurs when an airborne character lands
+
+### High-Fidelity Local Simulation
+
+High-fidelity local simulation handles continuous presentation, local physics, interpolation, animation, and spatial feedback. It belongs to the Perception Layer. Its purpose is to create experience, not to define world facts.
+
+For example:
+
+- Bullet trails and trajectory visuals
+- Cloth motion, debris scatter, particle diffusion
+- Camera follow, health-bar tweening, hit shake
+- Local collision feedback and spatial interpolation
+
+`Position` is a useful example because it often causes confusion. A character moves every frame, but the Causal Layer cannot and should not synchronize every coordinate change.
+
+The better question is this: **does the world truly care about position itself, or about the relations expressed through position?**
+
+Very often, it is the latter. A country does not record your coordinates at every instant. It records entry and exit at meaningful boundaries.
+
+Likewise:
+
+```text
+Character enters boss room  -> combat begins
+Character crosses finish line -> race ends
+Bullet hits target            -> damage is applied
+Character lands               -> jump becomes available again
+```
+
+In these cases, position is not the fact. The real facts are "combat began," "a boundary was crossed," "a hit was confirmed," or "the airborne state became grounded."
+
+**Position does not automatically belong in the Causal Layer. Only when positional change starts participating in event establishment, conflict adjudication, or future fact formation do the relevant changes need to be elevated into world facts.**
+
+Once one state is pushed into the Causal Layer, all the states that depend on it tend to follow. The scope expands until the system drifts back into the old object-centric pattern.
+
+That is the difference between relational modeling and state-centric modeling. The Causal Layer cares about relations that produce state change, not about state itself.
+
+---
+
+## Two Ways to Synchronize
+
+The Causal Layer and the Perception Layer are separated and do not share adjudication authority, but they still need a protocol for synchronizing the world. In games, two patterns are especially important.
+
+### 1. Deterministic Event Synchronization
+
+Once the Causal Layer has finished adjudication, the result can be published to the Perception Layer as a deterministic event.
+
+Examples:
+
+- `damage_applied`
+- `entity_died`
+- `phase_changed`
+
+Such events have two characteristics:
+
+- The Causal Layer has already produced a unique result
+- The result is deterministic and reproducible under the same input
+
+If one attack kills a thousand enemies, the causal work is already done. The remaining problem is presentational: how to stage the animation over time, batch the effects, drive the camera, and so on.
+
+### 2. Uncertainty Window Synchronization
+
+Some interactions enter the system without an immediate final outcome. They need time, input, or external events to converge. That is where an **uncertainty window** appears.
+
+Examples:
+
+- An attack may hit, be dodged, be blocked, trade, or be interrupted
+- A charge may complete or be canceled midway
+- A QTE may succeed or fail
+
+Here, "uncertain" does not mean the system is undefined. It means that **the set of possible branches is known, but this particular execution has not yet been resolved into one branch**.
+
+Because the branch set is bounded, these interactions are still compatible with replay, rollback, and optimization. Systems such as `GGPO` are evidence that if the adjudication core is lightweight and deterministic enough, rich real-time interaction does not automatically become unmanageable.
+
+An uncertainty window can be modeled as a **temporary state window**: a controlled lifecycle unit inside the Causal Layer that listens for time and events over a finite period, then commits a conclusion or is safely canceled when preempted.
+
+A temporary state window has three key properties:
+
+- **Time-bounded**: when the window closes, its internal process state disappears
+- **Preemptible**: a higher-priority event can cancel it
+- **Sandboxed**: it produces conclusions without becoming long-term world state itself
+
+For example, a block-timing window:
+
+1. The Causal Layer creates a `0.3s` guard window
+2. The window listens for time passage and hit events
+3. If a hit arrives during the window, it emits `guard_success`
+4. If the window expires with no hit, it emits `guard_timeout`
+5. If the character is stunned or the player cancels guard, the window is preempted and closed
+
+At the implementation level, these windows map naturally to **structured concurrency** and explicit lifecycle management.
+
+---
+
+## Input, State, and Alignment
+
+### Input Signals
+
+Player input, analog sticks, dragging, aiming, and local collisions are often continuous signals. The Causal Layer, however, only consumes discrete semantic events.
+
+For example:
+
+- Key pressed -> `attack_requested`
+- Charge key released -> `charge_released`
+- Local collision crosses a hit boundary -> `hit_candidate_detected`
+
+The Perception Layer cannot directly modify world state. It can only report well-formed semantic events or candidate events.
+
+### State Subscription
+
+The Perception Layer should not directly read or write the Causal Layer's internal fact history, adjudication records, or derived snapshots. It should consume authoritative change through protocol.
+
+The common pattern is:
+
+1. **Publish**: the Causal Layer publishes `snapshot / patches / timeline`
+2. **Subscribe**: each perception node subscribes only to the fragments it cares about
+3. **Derive**: local animation targets, camera targets, health-bar values, and other local state are derived from those subscriptions
+4. **Execute**: animation, physics feedback, and rendering continue to run around that derived state
+
+This is why the Perception Layer resembles a modern frontend runtime: it is a reactive projection of authoritative state.
+
+### Alignment, Transition, and Discard
+
+Continuous processes in the Perception Layer still need synchronization boundaries. The two layers must align at key moments:
+
+- **Alignment**: when the Causal Layer publishes a decisive event, the Perception Layer must acknowledge the latest fact
+- **Transition**: between two alignments, the Perception Layer may interpolate, predict, and choreograph freely
+- **Discard**: once a new fact arrives, any now-obsolete continuous process must be interrupted, even if it has not finished yet
+
+For example, if a death animation is still playing but a resurrection fact has already arrived, the Perception Layer must stop the old process and move to the new fact.
+
+> At alignment points, the latest fact wins. Between alignment points, the Perception Layer is free to improvise.
+
+---
+
+## Engineering the Perception Layer
+
+Because the Causal Layer is the authoritative source of facts, the Perception Layer is naturally suited to a reactive style of organization. This borrows from the frontend intuition of `UI = F(state)`, but it does not mean importing a browser runtime into a game engine. Facts remain the data source; perception nodes subscribe to them and derive presentational state; actual animation, physics, and rendering still run through the engine.
+
+Here, "reactive" is a style of code organization, not a new scheduling mechanism. Declarative spatial components in the Perception Layer eventually compile down to imperative engine calls. The value of reactivity is that developers can organize code around **subscribing to facts and deriving state**, rather than around manually wiring object callbacks and lifecycles.
+
+### Imperative vs. Reactive
+
+Traditional game presentation code is often imperative:
+
+```csharp
+enemy.TakeDamage(10);
+enemy.PlayHitAnimation();
+ui.ShowDamageNumber(enemy, 10);
+```
+
+Each object is told what to do directly, and state gets scattered across callbacks.
+
+Reactive code instead says:
+
+```typescript
+onFact('damage_applied', (fact) => {
+  animation.play('hit', fact.targetId);
+  ui.showDamageNumber(fact.targetId, fact.amount);
+});
+```
+
+In other words: when this fact happens, perform these reactions. Perception nodes subscribe to facts rather than calling one another directly.
+
+### Why the Perception Layer Benefits from Reactivity
+
+Frontend engineering asked a similar question years ago: if jQuery works, why do we need React?
+
+The Perception Layer's job is to present facts, and the same fact may trigger many kinds of presentation:
+
+- Death fact -> animation, UI update, quest progress, statistics
+- Damage fact -> floating numbers, screen shake, health-bar response
+
+In an imperative system, every new presentation concern tends to leak back into the code that produced the fact. In a reactive system, you add a new subscriber instead.
+
+This is one reason reactive frontend architectures displaced older imperative ones: they scale better against the natural entropy of growing software.
+
+Reactivity also makes alignment and discard feel natural. When a new fact arrives, old subscriptions can be canceled or superseded, and the Perception Layer can move to the new authoritative state without manually unwinding piles of callback state.
+
+If you want a mental model, modern fine-grained reactive systems such as SolidJS are a useful reference point.
+
+---
+
+## Engine Protocol
+
+The Perception Layer should not talk directly to engine-specific APIs. It should operate through project-defined interfaces. This is similar to how frontend code does not call the browser's drawing primitives directly, but works through the DOM and related APIs.
+
+Frontend engineering has settled into a familiar stack:
+
+```text
+Business Components -> UI Component Library -> React/Vue -> DOM -> Web API -> Browser Engine
+```
+
+The Perception Layer in a game can adopt a parallel structure:
+
+```text
+Business Spatial Components -> Spatial Component Library -> Spatial Component Runtime -> Spatial DOM -> Engine Protocol -> Concrete Engine Implementation
+```
+
+### A Frontend Analogy
+
+In web development, you do not describe pixels one by one. You write:
+
+```html
+<div class="card">
+  <h1>Title</h1>
+  <button>Click</button>
+</div>
+```
+
+The browser then:
+
+- Uses the **DOM** to represent structure
+- Uses **Web APIs** to expose capabilities such as events, rendering, audio, and networking
+- Uses the **rendering engine** to turn the result into visible output
+
+The same HTML, CSS, and JavaScript can run on different browsers because they all implement the same protocol surface.
+
+The game Perception Layer can work the same way.
+
+Instead of directly calling `Instantiate(GameObject)`, a scene can be declared like this:
+
+```jsx
+<Scene>
+  <Camera target={player} fov={60} />
+  <DirectionalLight direction={sunDir} />
+  <Character entity={player}>
+    <Weapon slot="main_hand" />
+    <HealthBar />
+  </Character>
+  {enemies.map(e => <Enemy key={e.id} entity={e} />)}
+</Scene>
+```
+
+The runtime then materializes that declaration:
+
+- **Spatial DOM** describes structure by turning components into a scene graph
+- **Engine protocol** exposes capabilities such as model creation, camera control, animation, and physics queries
+- **Engine implementation** performs the actual engine-specific work
+
+### Generic Engine Interfaces
+
+Just as Web APIs expose browser capabilities to application code, an engine protocol exposes engine capabilities to the Perception Layer.
+
+This keeps gameplay code from depending directly on Unity's `GameObject`, Unreal's `AActor`, or any other concrete engine object. Instead, gameplay presentation depends on capabilities:
+
+```text
+ICamera         - create cameras, set views, follow targets, shake the screen
+ILighting       - create lights, set color and intensity
+IRenderable     - create models, set transforms, play animation
+IPhysicsWorld   - raycast, query areas
+IParticleSystem - trigger particle effects
+ISpatialUI      - world-space UI such as health bars and damage numbers
+IAudioWorld     - spatial audio and background music
+```
+
+The Spatial DOM describes world structure, including both entity hierarchies and root-level configuration such as physics, rendering, audio, and lighting. Entity-bound components live and die with specific entities; configuration components describe shared environment and global capability. All of them respond to facts and are finally mapped onto a concrete engine implementation through the protocol layer.
+
+That separation decouples engine logic, game logic, and presentation logic, moving toward an environment in which **everything is a component and everything is driven by subscription**.
+
+### Why This Helps
+
+**First, business code becomes declarative.**
+
+You describe what exists in the world instead of manually constructing engine objects and managing their lifecycle.
+
+**Second, composition improves.**
+
+Just as frontend code can compose UI like `<Card><Header /><Body /></Card>`, game presentation can compose spatial components:
+
+```jsx
+<Enemy entity={e}>
+  <Model asset="goblin" />
+  <Animator />
+  <HealthBar />
+  <HitEffect />
+</Enemy>
+```
+
+These components can be composed, split, nested, and tested independently.
+
+**Third, engine coupling decreases.**
+
+Low-level engine details stop leaking into gameplay presentation code. Teams can share one protocol surface instead of forcing every contributor to think in engine-native objects all day.
+
+---
+
+## Autonomy Boundary
+
+The Perception Layer may hold a great deal of local state, but it cannot privately modify world facts.
+
+A practical boundary table looks like this:
+
+| Scope | Perception Layer | Causal Layer |
+|---|---|---|
+| Visual presentation | Animation, particles, camera motion, UI transitions, trails, weather effects | — |
+| Local feedback | Hover states, press feedback, drag previews, telegraph warm-up | Confirmation, release, actual effect |
+| Continuous physics | Local collision response, trajectory interpolation, cloth, debris, rigid-body motion | Hit confirmed, landed, entered area, displacement accepted |
+| Spatial perception | Detect candidate collisions, candidate targets, boundary crossings | Hit confirmation, target switch confirmation, state switch confirmation |
+| Behavioral decisions | — | Attack, skill, hit, death, phase change, state change |
+
+The core rule is simple:
+
+> If a result can influence future world facts, it cannot remain only in the Perception Layer. The Causal Layer should hold only the minimum authoritative logic needed to adjudicate it.
+
+---
+
+## Related Reading
+
+- [Causality-Oriented](/docs/dual-world-theory/core-concepts): Precise definitions of the Causal Layer, the Perception Layer, and their boundary.
+- [Dual World Theory](/docs/dual-world-theory/theory): The philosophical basis of the two-layer model.
+- [Causal Propagation Network](/docs/dual-world-theory/causal-layer-mechanism): Events, rules, facts, and the sources of complexity inside the Causal Layer.

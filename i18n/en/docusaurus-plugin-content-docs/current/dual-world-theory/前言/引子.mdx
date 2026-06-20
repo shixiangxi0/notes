@@ -1,0 +1,94 @@
+---
+sidebar_position: 2
+slug: /dual-world-theory/intro
+---
+
+# Introduction
+
+Let us start with a familiar OOP scenario.
+
+Traditional game objects are often treated as: **object = data + behavior + presentation**
+
+So an `Enemy`:
+
+- has HP
+- has AI
+- has animation
+- has effects
+- has movement
+- has a state machine
+
+Eventually it turns into a **self-contained universe**.
+
+Dual World Theory argues that **objects do not own world facts**. Objects may own behavior and presentation capabilities, but world facts do not belong to objects. World facts belong to the **Causal Layer**.
+
+That shift decentralizes authority at the architectural level.
+
+For example, **a character does not "own" its HP**. The authoritative HP value is derived from damage events and adjudication rules in the Causal Layer. The character object simply reads that authoritative value and reacts to it.
+
+This makes many messy design problems suddenly much clearer. A good example is why death sequences so often become tangled.
+
+**Traditional thinking:**
+
+```text
+Enemy.dead = true
+Enemy.playDeath()
+Enemy.disableCollision()
+Enemy.remove()
+```
+
+Death becomes **state, animation, lifecycle, and scene management all at once**.
+
+**In Dual World Theory:**
+
+```text
+Causal Layer:
+    fatal_damage_taken
+    emit die
+
+Perception Layer:
+    receive die
+    play death sequence
+    receive remove_entity
+    clean up entity
+```
+
+Once the Causal Layer adjudicates the outcome, the fact is established. A whole chain can then follow from it: death events, revenge passives, quest completion, and so on. The Perception Layer is only responsible for how those facts are presented.
+
+The causal chain stays explicit and complete.
+
+In traditional game development, progression is often distributed across one object after another. Over time, each object accumulates complex callback logic, and causality gets scattered across methods and side effects. It becomes hard to see the actual narrative of the game state.
+
+For example:
+
+```text
+Buff modifies AttackSpeed
+AttackSpeed affects Animator
+Animator changes HitTiming
+HitTiming shifts ComboWindow
+```
+
+At the end, nobody can clearly answer: **who actually caused what?**
+
+Dual World Theory pushes developers toward:
+
+> **cause -> event -> state transition -> projection**
+
+Causality must be made explicit. That is one of the theory's strongest qualities, because **maintainability is, in large part, causal transparency**.
+
+This model also has a collaborative advantage. It naturally clarifies team boundaries:
+
+- Artists, animators, and engine programmers focus on presentation
+- System designers focus on event composition and rules
+- Gameplay programmers focus on connecting events to presentation
+
+The boundaries become much clearer. Many large projects collapse late in development because **too many different parts of the codebase are quietly modifying world facts**.
+
+Dual World Theory weakens the traditional OOP instinct to center everything around object-local state machines. Objects do not own world facts, and they do not hold adjudication authority. Over time, objects become thinner, while event flow, behavior composition, and adjudication mechanisms become richer.
+
+---
+
+## Related Reading
+
+- [Causality-Oriented](/docs/dual-world-theory/core-concepts): Core terminology and criteria for drawing layer boundaries.
+- [Game Architecture Practice](/docs/dual-world-theory/practice): How the theory applies to real game architecture.

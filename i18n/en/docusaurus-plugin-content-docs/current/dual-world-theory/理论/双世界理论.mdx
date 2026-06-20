@@ -1,0 +1,189 @@
+---
+sidebar_position: 1
+slug: /dual-world-theory/theory
+---
+
+# Dual World Theory
+
+Before introducing the theory itself, we need to establish the background it responds to.
+
+## Background
+
+The Von Neumann model is built around memory, state, instructions, and state transitions. Memory is spatial; data lives at addresses; computation is expressed as operations over that space. At a deep level, a program describes what exists in memory at a given moment.
+
+That model is extraordinarily powerful, but it is also, fundamentally, a **spatial metaphor**.
+
+Object-oriented programming inherits that worldview and refines it through classes, objects, inheritance, and composition. An object is a named space; a method is an operation performed on that space. OOP is rich in spatial metaphors such as containment, hierarchy, nesting, and structure, but comparatively weak in temporal ones such as events, evolution, adjudication, and causality.
+
+As software engineering has matured, however, many of its hardest problems have turned out to be temporal: concurrency, distributed systems, consistency, transactions, messaging, timeouts, synchronization.
+
+In the object-oriented worldview:
+
+$$
+\text{World} = \text{Current State}
+$$
+
+Change then appears as:
+
+$$
+\text{State}_1 \rightarrow \text{State}_2 \rightarrow \text{State}_3
+$$
+
+Causality becomes privatized and fragmented. Each object owns a slice of state, mutates that state through its own methods, or reaches into other objects through callbacks and side effects.
+
+History is therefore split into countless fragments scattered across private object space. No unified causal narrative protects continuity of identity.
+
+Spatial models optimize for static clarity: clean boundaries, clear hierarchies, intuitive composition. Temporal models optimize for dynamic clarity: traceable causality, narratable history, adjudicable conflict.
+
+When a fundamentally temporal problem is forced into a spatial structure, time gets fragmented, hidden, and privatized.
+
+At bottom, this is what it means to model time through space.
+
+---
+
+## Dual World Theory
+
+> Dual World Theory asserts that any system that persists through time must distinguish **how world facts are formed** from **how the world is perceived and presented**.
+
+Any complex system that must continue to exist while exchanging information with the outside world faces two simultaneous requirements:
+
+1. It must preserve the continuity of its own history.
+2. It must keep absorbing external change.
+
+If a system ignores external change entirely, it drifts out of touch with its environment and loses adaptability. But if each new change simply overwrites the past, the system cannot form history, context, or identity.
+
+A persistent world must therefore keep incorporating new change into an existing history, so that the future remains grounded in the past.
+
+Under that pressure, two cooperating mechanisms emerge:
+
+- **Causal Layer**: receives events, interprets them, adjudicates relational change, and maintains an explainable history of facts. Its core assets are pending events, adjudication rules, and fact history. It corresponds to the **temporal dimension** of the system: irreversibility, sequence, and causal continuity.
+- **Perception Layer**: senses the environment, processes change, and produces experience. It translates external change into usable signals and turns facts into projection and presentation. It corresponds to the **spatial dimension**: simultaneous perception, parallel presentation, and rich local feedback.
+
+Together they form a feedback loop:
+
+```text
+External World -> Perception Layer detects -> reports event -> Causal Layer adjudicates
+                                                           ↓
+External World <- Perception Layer presents <- consumes fact <- emits fact
+```
+
+---
+
+### Causal Layer
+
+There is an old philosophical question: what is the world made of? One answer points to substances and entities; another points to relations and process. The Causal Layer is rooted in the latter tradition.
+
+State answers one question:
+
+What is the world like right now?
+
+But any system that persists must also answer another:
+
+Why did the world become this way? What caused the state to change?
+
+The essence of the Causal Layer is to preserve historical continuity and causal explainability.
+
+Consider a player's attack:
+
+```text
+attack initiated
+  ↓
+damage dealt
+  ↓
+hp reaches zero
+  ↓
+character dies
+```
+
+State is merely the current projection of those historical facts:
+
+```text
+Player.hp = 0
+Player.dead = true
+```
+
+**If the events that produced the state are missing, the state itself loses most of its meaning.**
+
+The external world tends toward disorder. Changes arrive all at once, without explanation, without trust, and often in conflict.
+
+Any system that wants to persist therefore needs a mechanism for turning external change into stable, traceable history. In Dual World Theory, that mechanism is called **adjudication**.
+
+It includes at least three kinds of work:
+
+- **Validity checks**: does this request meet the conditions required to take effect? Is the caster silenced? Is the balance sufficient? Is the request allowed?
+- **Semantic transformation**: what does this event actually mean in context? Is the hit a normal hit, a critical hit, or a dodge? Is the transaction successful, failed, or rolled back?
+- **Conflict adjudication**: when events collide or arrive "simultaneously," which factual version enters history?
+
+Examples:
+
+> - When an operating system receives a syscall or an interrupt, the kernel must decide who gets CPU time and which operation proceeds first.
+> - When two runners cross the finish line almost simultaneously, the crowd may not know who won, but the official record must still name an order.
+> - When two blockchain transactions attempt to spend the same asset, both may be broadcast and observed, but only one historical ordering can become canonical.
+> - In an FPS game, two players may fire at nearly the same time, but the server still has to determine who hit first and who died first.
+
+This is why explainability matters. External change is noisy, concurrent, and often conflicting. If a fact cannot be traced to its source, then the state derived from it cannot explain how it came to be.
+
+---
+
+## Eventual Causal Consistency
+
+Any process that aims to sustain a stable world cannot leave facts unresolved forever.
+
+Once the Causal Layer makes an adjudication, the system should converge within finite time on the factual version determined by that adjudication. This is **Eventual Causal Consistency**.
+
+It allows for three things:
+
+- Presentation may lag behind
+- Perception may interpolate
+- Local views may temporarily diverge
+
+But within bounded time and space, all participants must ultimately face the same factual version of the world, so that the causal chain remains complete and explainable.
+
+At the macroscopic level, true simultaneity does not exist. What looks simultaneous is merely a local observer's temporary inability to distinguish order.
+
+Two people swing swords at the same time. Two bullets hit at the same time. Two threads run at the same time. To local observers, these events may appear simultaneous. But if the system must produce outcomes, stabilize state, and establish facts, it must eventually settle on an explainable causal ordering.
+
+That is why **adjudication is unavoidable**.
+
+Consider two game characters striking each other "at the same time":
+
+```text
+A hits B
+B hits A
+```
+
+The Causal Layer still has to answer:
+
+- Who dies first?
+- Can post-death skills still trigger?
+- Does lifesteal apply?
+- Does the death explosion occur?
+- Who gets aggro credit?
+
+Even if the animation, effects, and player perception all suggest simultaneity, the system must still adjudicate.
+
+The same principle appears elsewhere:
+
+- **Version control**: if two developers edit the same line, Git may try to merge automatically, but unresolved conflicts still require adjudication.
+- **Database transactions**: CPUs, networks, and requests may run in parallel, but the database still needs an authoritative ordering.
+- **Law**: two people may accuse each other, but a court still has to produce a narratable chain of facts.
+
+The word **macroscopic** matters here. At microscopic scales we may discuss superposition, probability, true concurrency, or nondeterminism. But at the scale where systems must remain governable, observable, and shareable, the world has to converge into a narratable reality.
+
+Otherwise we lose the ability to:
+
+- Observe
+- Reason
+- Collaborate
+- Predict
+- Govern
+
+Civilization itself is built on the eventual ordering of causality.
+
+---
+
+## Related Reading
+
+- [Causality-Oriented](/docs/dual-world-theory/core-concepts): A concise reference for the theory's core terms.
+- [Causal Propagation Network](/docs/dual-world-theory/causal-layer-mechanism): How events, rules, facts, and propagation create complexity inside the Causal Layer.
+- [Game Architecture Practice](/docs/dual-world-theory/practice): How the theory unfolds in real game architecture.

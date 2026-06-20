@@ -7,7 +7,8 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const {siteConfig, i18n} = useDocusaurusContext();
+  const isEn = i18n.currentLocale === 'en';
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -19,7 +20,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/dual-world-theory/preface">
-            开始阅读
+            {isEn ? 'Start Reading' : '开始阅读'}
           </Link>
         </div>
       </div>
@@ -28,11 +29,12 @@ function HomepageHeader() {
 }
 
 export default function Home() {
-  const {siteConfig} = useDocusaurusContext();
+  const {siteConfig, i18n} = useDocusaurusContext();
+  const isEn = i18n.currentLocale === 'en';
   return (
     <Layout
       title={siteConfig.title}
-      description="面向因果的架构思考笔记。">
+      description={isEn ? 'Notes on causality-oriented architecture.' : '面向因果的架构思考笔记。'}>
       <HomepageHeader />
     </Layout>
   );

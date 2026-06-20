@@ -1,0 +1,27 @@
+---
+slug: /dual-world-theory/preface
+---
+
+# Preface
+
+When people talk about software complexity, they usually point to scope creep, team size, technical debt, or the complexity of the problem domain itself. All of those explanations are valid, but they mostly describe symptoms rather than the modeling-level source.
+
+This project starts from a more fundamental observation: a large class of complexity in modern software comes from using spatial organization to carry temporal evolution. That coupling is not a flaw in any one framework or language. It is a deep modeling habit inherited from the Von Neumann architecture and reinforced by object-oriented design.
+
+Dual World Theory is an attempt to offer a different modeling approach for complex software systems, along with a theoretical basis for that approach.
+
+Traditional software modeling is good at understanding a system as a set of objects, states, and relations arranged in space. It usually begins with module boundaries, ownership, interfaces, and state, and only then turns to temporal concerns such as events, synchronization, consistency, history, and feedback.
+
+Dual World Theory reverses that emphasis. It treats a system as an ongoing process in time: external input enters the system, is interpreted, adjudicated, folded into history, and turned into a new factual version of the world, which is then perceived, consumed, and responded to by different participants.
+
+It therefore focuses less on objects themselves and more on:
+
+- How events enter the system
+- How facts are formed
+- How causality continues
+- How history is preserved
+- How the world is perceived and projected
+
+This modeling approach is called **Causality-Oriented** modeling.
+
+For systems that run continuously, interact constantly, and must keep absorbing change, a causality-oriented approach can be more direct, more scalable, and easier to maintain.
