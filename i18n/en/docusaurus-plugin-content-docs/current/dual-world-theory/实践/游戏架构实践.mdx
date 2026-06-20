@@ -228,13 +228,13 @@ This is one reason reactive frontend architectures displaced older imperative on
 
 Reactivity also makes alignment and discard feel natural. When a new fact arrives, old subscriptions can be canceled or superseded, and the Perception Layer can move to the new authoritative state without manually unwinding piles of callback state.
 
-If you want a mental model, modern fine-grained reactive systems such as SolidJS are a useful reference point.
+For implementation inspiration, modern fine-grained reactive systems such as SolidJS are a useful reference point.
 
 ---
 
 ## Engine Protocol
 
-The Perception Layer should not talk directly to engine-specific APIs. It should operate through project-defined interfaces. This is similar to how frontend code does not call the browser's drawing primitives directly, but works through the DOM and related APIs.
+The Perception Layer should not interface directly with engine-specific APIs. It should operate through project-defined interfaces. This is similar to how frontend code does not call the browser's drawing primitives directly, but works through the DOM and related APIs.
 
 Frontend engineering has settled into a familiar stack:
 

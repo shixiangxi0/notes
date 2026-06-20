@@ -37,13 +37,13 @@ process requests CPU time slice
 device issues interrupt
 ```
 
-An event is not yet a fact. If two players try to pick up the same item:
+An event is not yet a fact. If two players try to pick up the same item at the same time:
 
 ```text
 pick(A, item)  pick(B, item)
 ```
 
-both events may enter the system, but both cannot become facts.
+both events may enter the system, but they cannot both become facts.
 
 ---
 
@@ -291,7 +291,7 @@ the system must produce a result. It cannot leave the conflict permanently unres
 
 ### 2. Determinism
 
-The same facts, events, and rules should produce the same result. The Causal Layer maintains authoritative facts, so its outcomes must be deterministic.
+The same facts, events, and rules must produce the same result. The Causal Layer maintains authoritative facts, so its outcomes must be deterministic.
 
 ### 3. Traceability
 
