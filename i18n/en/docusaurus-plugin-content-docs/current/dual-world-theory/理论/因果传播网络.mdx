@@ -213,7 +213,7 @@ The core question is: **when does propagation stop?**
 
 | In games | In cloud-native systems |
 |---|---|
-| `damage -> thorn_damage -> damage -> thorn_damage` | `load_change -> autoscale -> traffic_shift -> load_change` |
+| `damage -> thorn_damage -> damage -> thorn_damage` | `load_change -> autoscale -> traffic_change -> load_change -> autoscale_again` |
 
 This is why the Causal Layer needs termination mechanisms such as time windows, count limits, preemption, and resource bounds.
 
