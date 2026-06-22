@@ -75,6 +75,7 @@ const sidebars = {
       items: [
         'about/关于双世界',
         'about/关于作者',
+        'about/alan-kay-on-oop',
       ],
     },
   ],
