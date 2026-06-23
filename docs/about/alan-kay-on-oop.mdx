@@ -1,59 +1,55 @@
 ---
-title: Dr. Alan Kay on the Meaning of "Object-Oriented Programming"
+title: Alan Kay 谈「面向对象编程」的本意
 slug: /about/alan-kay-on-oop
 ---
 
-# Dr. Alan Kay on the Meaning of "Object-Oriented Programming"
+# Alan Kay 谈「面向对象编程」的本意
 
-The following are two emails from Alan Kay to Stefan Ram in July 2003, clarifying what "object-oriented programming" originally meant to the person who coined the term.
+下面是 Alan Kay 于 2003 年 7 月回复 Stefan Ram 的两封邮件。Kay 是「面向对象」这一术语的提出者，他在信中澄清了这个概念最初的含义。
+
+**来源：** http://www.purl.org/stefan_ram/pub/doc_kay_oop_en
 
 ---
 
-## Email 1 — July 23, 2003
+## 邮件一 —— 2003 年 7 月 23 日
 
-> **Subject:** Re: Clarification of "object-oriented"
+> **主题：** Re: Clarification of "object-oriented"
 
 Hi Stefan —
 
-Sorry for the delay but I was on vacation.
+抱歉回复晚了，我之前在度假。
 
-At 6:27 PM +0200 7/17/03, Stefan Ram wrote:
+（以下是 Stefan Ram 在 7 月 17 日来信中的问题，此处略作整理。）
 
-> Dear Dr. Kay,
->
-> I would like to have some authoritative word on the term "object-oriented programming" for my tutorial page on the subject. The only two sources I consider to be "authoritative" are the International Standards Organization, which defines "object-oriented" in "ISO/IEC 2382-15", and you, because, as they say, you have coined that term.
+> 我想为我的教程页面找到一个关于「面向对象编程」的权威说法。我认为只有两个来源足够权威：一个是国际标准化组织在 ISO/IEC 2382-15 中的定义，另一个就是您，因为据说这个术语是您创造的。
 
-I'm pretty sure I did.
+我非常确定是我。
 
-> Unfortunately, it is difficult to find a web page or source with your definition or description of that term. There are several reports about what you might have said in this regard (like "inheritance, polymorphism and encapsulation"), but these are not first-hand sources. I am also aware that later you put more emphasis on "messaging" — but I still would like to know about "object oriented".
->
-> For the records, my tutorial page, and further distribution and publication could you please explain:
->
-> When and where was the term "object-oriented" used first?
+> 您能解释一下「面向对象」这个术语最早是在何时、何地使用的吗？
 
-At Utah sometime after Nov 66 when, influenced by Sketchpad, Simula, the design for the ARPAnet, the Burroughs B5000, and my background in Biology and Mathematics, I thought of an architecture for programming. It was probably in 1967 when someone asked me what I was doing, and I said: "It's object-oriented programming".
+那是 1966 年 11 月之后在犹他大学。当时受 Sketchpad、Simula、ARPAnet 的设计、Burroughs B5000，以及我自己的生物学和数学背景的影响，我构思了一种编程架构。大概是在 1967 年，有人问我正在做什么，我说：「这是面向对象编程」。
 
-The original conception of it had the following parts.
+它最初的概念包含以下几个部分：
 
-- I thought of objects being like biological cells and/or individual computers on a network, only able to communicate with messages (so messaging came at the very beginning — it took a while to see how to do messaging in a programming language efficiently enough to be useful).
+- 我把对象想象成生物细胞，或者是网络中独立的计算机，它们只能通过消息互相通信（所以消息传递从一开始就是核心——只是过了一段时间，我才找到在编程语言中足够高效地实现消息传递的方法）。
 
-- I wanted to get rid of data. The B5000 almost did this via its almost unbelievable HW architecture. I realized that the cell/whole-computer metaphor would get rid of data, and that `<-` would be just another message token (it took me quite a while to think this out because I really thought of all these symbols as names for functions and procedures).
+- 我想消除「数据」这个概念。B5000 通过其几乎不可思议的硬件架构几乎做到了这一点。我意识到，细胞/整台计算机的隐喻可以消除数据，`<-` 也可以只是另一种消息符号（我花了很长时间才想清楚这一点，因为我过去真的把这些符号都当成函数和过程的名字）。
 
-- My math background made me realize that each object could have several algebras associated with it, and there could be families of these, and that these would be very very useful. The term "polymorphism" was imposed much later (I think by Peter Wegner) and it isn't quite valid, since it really comes from the nomenclature of functions, and I wanted quite a bit more than functions. I made up a term "genericity" for dealing with generic behaviors in a quasi-algebraic form.
+- 我的数学背景让我意识到，每个对象都可以关联多个代数，而且可以存在这些代数的家族，这非常有用。「多态」这个词是后来才被强加进来的（我想是 Peter Wegner），它并不太准确，因为它来自函数命名法，而我想要的远不止函数。我自己造了一个词「genericity」，用来以准代数形式处理泛化行为。
 
-- I didn't like the way Simula I or Simula 67 did inheritance (though I thought Nygaard and Dahl were just tremendous thinkers and designers). So I decided to leave out inheritance as a built-in feature until I understood it better.
+- 我不喜欢 Simula I 或 Simula 67 实现继承的方式（尽管我认为 Nygaard 和 Dahl 是非常杰出的思想家和设计师）。所以我决定在更好地理解继承之前，不把它作为内置特性。
 
-My original experiments with this architecture were done using a model I adapted from van Wijngaarten's and Wirth's "Generalization of Algol" and Wirth's Euler. Both of these were rather LISP-like but with a more conventional readable syntax. I didn't understand the monster LISP idea of tangible metalanguage then, but got kind of close with ideas about extensible languages draw from various sources, including Irons' IMP.
+我最初对这种架构的实验，使用了一种从 van Wijngaarten 和 Wirth 的「Generalization of Algol」以及 Wirth 的 Euler 改编而来的模型。这两者都有点像 LISP，但语法更传统、可读性更好。当时我还不理解 LISP 那种具体的元语言思想，但已经通过不同来源获得了一些关于可扩展语言的想法，包括 Irons 的 IMP。
 
-The second phase of this was to finally understand LISP and then using this understanding to make much nicer and smaller and more powerful and more late bound understructures. Dave Fisher's thesis was done in "McCarthy" style and his ideas about extensible control structures were very helpful. Another big influence at this time was Carl Hewitt's PLANNER (which has never gotten the recognition it deserves, given how well and how earlier it was able to anticipate Prolog).
+第二阶段是我终于理解了 LISP，并用这种理解去构建更优雅、更小、更强大、更延迟绑定的底层结构。Dave Fisher 的论文是用「McCarthy 风格」写的，他关于可扩展控制结构的想法非常有帮助。另一个重大影响来自 Carl Hewitt 的 PLANNER（它从未得到应有的认可，尽管它很早就预见到了 Prolog）。
 
-The original Smalltalk at Xerox PARC came out of the above. The subsequent Smalltalk's are complained about in the end of the History chapter: they backslid towards Simula and did not replace the extension mechanisms with safer ones that were anywhere near as useful.
+后来的 Xerox PARC Smalltalk 就是基于以上工作诞生的。后续的各种 Smalltalk，正如我在《Smalltalk 历史》一章末尾所批评的，它们退步回了 Simula 的方向，而且没有把扩展机制替换成同样有用但更安全的形式。
 
-> What does "object-oriented [programming]" mean to you? (No tutorial-like introduction is needed, just a short explanation [like "programming with inheritance, polymorphism and encapsulation"] in terms of other concepts for a reader familiar with them, if possible. Also, it is not neccessary to explain "object", because I already have sources with your explanation of "object" from "Early History of Smalltalk".)
+> 对您来说，「面向对象编程」意味着什么？
 
-(I'm not against types, but I don't know of any type systems that aren't a complete pain, so I still like dynamic typing.)
+（我并不反对类型，但我不知道哪种类型系统不是彻头彻尾的麻烦，所以我仍然喜欢动态类型。）
 
-**OOP to me means only messaging, local retention and protection and hiding of state-process, and extreme late-binding of all things.** It can be done in Smalltalk and in LISP. There are possibly other systems in which this is possible, but I'm not aware of them.
+**对我来说，面向对象只意味着：消息传递、状态-过程的局部保留与保护及隐藏，以及所有东西的极端延迟绑定。** 它可以在 Smalltalk 和 LISP 中实现。可能还有其他系统也能做到，但我不知道。
 
 Cheers,
 
@@ -61,15 +57,19 @@ Alan
 
 ---
 
-## Email 2 — July 26, 2003
+## 邮件二 —— 2003 年 7 月 26 日
 
-> **Subject:** Re: Clarification of "object-oriented"
+> **主题：** Re: Clarification of "object-oriented"
 
-One of the things I should have mentioned is that there were two main paths that were catalysed by Simula. The early one (just by accident) was the bio/net non-data-procedure route that I took. The other one, which came a little later as an object of study was abstract data types, and this got much more play.
+有一件事我之前应该提到：Simula 催化了两个主要方向。较早的一个（纯属偶然）是我走的生物/网络、非数据-过程路线。另一个稍晚成为研究对象的是抽象数据类型（ADT），它得到了更多的关注。
 
-If we look at the whole history, we see that the proto-OOP stuff started with ADT, had a little fork towards what I called "objects" — that led to Smalltalk, etc., — but after the little fork, the CS establishment pretty much did ADT and wanted to stick with the data-procedure paradigm. Historically, it's worth looking at the USAF Burroughs 220 file system (that I described in the Smalltalk history), the early work of Doug Ross at MIT (AED and earlier) in which he advocated embedding procedure pointers in data structures, Sketchpad (which had full polymorphism — where e.g. the same offset in its data structure meant "display" and there would be a pointer to the appropriate routine for the type of object that structure represented, etc., and the Burroughs B5000, whose program reference tables were true "big objects" and contained pointers to both "data" and "procedures" but could often do the right thing if it was trying to go after data and found a procedure pointer. And the very first problems I solved with my early Utah stuff was the "disappearing of data" using only methods and objects. At the end of the 60s (I think) Bob Balzer wrote a pretty nifty paper called "Dataless Programming", and shortly thereafter John Reynolds wrote an equally nifty paper "Gedanken" (in 1970 I think) in which he showed that using the lambda expressions the right way would allow data to be abstracted by procedures.
+回顾整个历史，我们看到原初的面向对象思想是从 ADT 开始的，然后分出一个小岔路，通向我所称的「对象」——这条岔路最终导致了 Smalltalk 等。但在这个小岔路之后，计算机科学的主流基本上还是走了 ADT 路线，并希望继续留在数据-过程范式里。
 
-The people who liked objects as non-data were smaller in number, and included myself, Carl Hewitt, Dave Reed and a few others — pretty much all of this group were from the ARPA community and were involved in one way or another with the design of ARPAnet->Internet in which the basic unit of computation was a whole computer. But just to show how stubbornly an idea can hang on, all through the seventies and eighties, there were many people who tried to get by with "Remote Procedure Call" instead of thinking about objects and messages. Sic transit gloria mundi.
+历史上值得注意的工作包括：美国空军的 Burroughs 220 文件系统（我在 Smalltalk 历史中提到过）、MIT 的 Doug Ross 早期的工作（AED 及更早），他主张在数据结构中嵌入过程指针、Sketchpad（它具有完整的多态——例如，数据结构中的同一个偏移量意味着「显示」，而指针会指向该结构所代表对象类型的适当例程），以及 Burroughs B5000，它的程序引用表是真正的「大对象」，包含指向「数据」和「过程」的指针，但当它试图获取数据却发现是指向过程的指针时，往往能正确处理。
+
+我最初在犹他做的实验，解决的问题就是只用方法和对象来「让数据消失」。60 年代末（我想）Bob Balzer 写了一篇很精彩的论文叫《Dataless Programming》；不久之后 John Reynolds 写了一篇同样精彩的论文《Gedanken》（我想是 1970 年），他展示了以正确方式使用 lambda 表达式可以让数据被过程抽象。
+
+喜欢「对象作为非数据」的人比较少，包括我自己、Carl Hewitt、Dave Reed 和其他一些人——这群人几乎都来自 ARPA 社区，并以某种方式参与了 ARPAnet → Internet 的设计，其中计算的基本单元就是一台完整的计算机。但这也说明一个想法可以多顽固地坚持下来：在整个七十年代和八十年代，有很多人都试图用「远程过程调用」（RPC）来凑合，而不是去思考对象和消息。Sic transit gloria mundi.
 
 Cheers,
 
@@ -77,12 +77,12 @@ Alan
 
 ---
 
-## Takeaway
+## 要点
 
-For Alan Kay, object-oriented programming was never primarily about inheritance, classes, or encapsulation as ends in themselves. It was about:
+对 Alan Kay 来说，面向对象编程从来都不是主要关于继承、类或封装本身。它关乎的是：
 
-- **Messaging** between independent entities
-- **Local retention and protection** of state-process
-- **Extreme late-binding** of all things
+- **消息传递**：独立实体之间的通信
+- **状态-过程的局部保留与保护**：对象自己持有并保护自己的状态
+- **极端延迟绑定**：一切都尽可能晚地绑定
 
-This is one reason Dual World Theory finds the traditional object-as-data-container model limiting: when objects are reduced to bundles of state with methods, the deeper idea of message-passing, autonomous cells of computation gets lost — and with it, a clean way to model causality over time.
+这也是 Dual World Theory 认为传统「对象即数据容器」模型有局限的原因之一：当对象被简化为带方法的状态集合时，消息传递、自主计算单元这些更深层的思想就丢失了——随之而来的是，用清晰的方式建模随时间展开的因果关系也变得更加困难。

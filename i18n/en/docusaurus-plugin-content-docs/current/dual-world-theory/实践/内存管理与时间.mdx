@@ -1,0 +1,338 @@
+---
+sidebar_position: 2
+title: Memory Management as Time Management
+slug: /dual-world-theory/practice/memory-management-as-time-management
+---
+
+# Memory Management as Time Management
+
+In software engineering, memory management is usually discussed as a spatial problem:
+
+- Where is this block of memory allocated?
+- Who holds a reference to it?
+- What kind of object graph do the references form?
+
+But if we shift perspective, we see that memory management is essentially about managing **time**:
+
+> **When can a piece of data disappear in time?**
+
+This question is hard because a program cannot truly predict the future. So different languages and runtimes adopt different strategies, using currently visible **spatial relationships** to infer or constrain invisible **temporal relationships**.
+
+---
+
+## 1. GC: Inferring Temporal Liveness from Spatial Reachability
+
+Many people's understanding of GC stays at the surface:
+
+> GC automatically frees memory.
+
+More fundamentally:
+
+> **GC is a runtime algorithm that infers object lifetimes from spatial reference relationships.**
+
+It tries to answer the question:
+
+```text
+Will this object be accessed in the future?
+```
+
+That question is itself temporal:
+
+```text
+Object
+  |
+  |-------- future time -------->
+           ?
+           will it still be used?
+```
+
+Programs cannot predict the future, so GC uses an approximation:
+
+```text
+Root
+ ↓
+reference
+ ↓
+object graph
+```
+
+- Reachable from Root → likely to be used in the future → **keep**
+- Unreachable → unlikely to be used in the future → **collect**
+
+So:
+
+> **GC uses current spatial reachability to approximate future temporal liveness.**
+
+This is "inferring time from space."
+
+---
+
+## 2. Why Does OOP Rely So Heavily on GC?
+
+The core model of OOP is:
+
+```text
+Object
+  |
+State
+  |
+Reference
+  |
+Other Object
+```
+
+Objects form complex spatial networks:
+
+```text
+Player
+  ↓
+Weapon
+  ↓
+Effect
+  ↓
+Animation Callback
+  ↓
+Player
+```
+
+In this network, lifecycles become implicit:
+
+- When is Weapon released?
+- When is Effect released?
+- When does Player truly die?
+
+These are hard questions to answer directly.
+
+So "object graph + GC" becomes a natural choice. Java, C#, and JavaScript all follow this direction: delegate lifetime inference to the runtime.
+
+---
+
+## 3. Rust: Moving Lifetime Proof to Compile Time
+
+Rust's revolution is:
+
+> **It moves the lifetime problem to compile time.**
+
+But it does not change the underlying model. It is still:
+
+```text
+object
+  ↓
+reference
+  ↓
+object
+```
+
+It just adds constraints:
+
+```text
+Who owns whom?
+Who outlives whom?
+```
+
+For example:
+
+```rust
+// Player owns Weapon
+// means Weapon's lifetime ≤ Player's lifetime
+```
+
+The compiler checks:
+
+```text
+Player drops
+   ↓
+Weapon must drop first
+```
+
+So Rust is essentially:
+
+> **Turning the lifetime relationships that GC infers at runtime into explicitly declared lifetime constraints.**
+
+Comparing the two:
+
+```text
+Java:
+spatial relationship
+   ↓
+infer time at runtime
+
+Rust:
+spatial relationship
+   ↓
+prove time relationship at compile time
+```
+
+---
+
+## 4. Why Is Rust Hard?
+
+Because real-world temporal relationships are not always trees.
+
+Rust is most comfortable with an ownership tree:
+
+```text
+Player
+  |
+  + Weapon
+  |
+  + Inventory
+```
+
+Lifetimes are naturally:
+
+```text
+Player > Weapon
+Player > Inventory
+```
+
+But in complex systems, what we often have is:
+
+```text
+A uses B
+B listens to C
+C calls back A
+```
+
+This is a **causal loop**:
+
+```text
+A → B → C → A
+```
+
+not an ownership tree.
+
+Rust needs `Rc`, `Arc`, `Weak`, `RefCell`, lifetime annotations, and interior mutability to escape strict ownership. This is also why many people find Rust difficult.
+
+---
+
+## 5. The Causality Model Offers Another Temporal Structure
+
+From a Causality-Oriented perspective, the basic units of a system are not objects but events and facts:
+
+```text
+Event → Fact → Event
+```
+
+This offers a different temporal structure. Take an attack as an example:
+
+```text
+attack_requested
+       ↓
+damage_applied
+       ↓
+entity_dead
+```
+
+The lifecycle is naturally:
+
+```text
+attack_requested
+        |
+        | propagation complete
+        v
+      release
+```
+
+There is no need to ask:
+
+```text
+Who references attack?
+Who owns attack?
+```
+
+Because time already tells you:
+
+> **The lifetime of this event is over.**
+
+This is a different philosophy of memory:
+
+| Approach | Core Idea |
+|---|---|
+| Traditional OOP + GC | Spatial objects → infer lifetime through reference relationships |
+| Rust | Spatial relationships → prove time relationship at compile time |
+| Causal runtime | Temporal flow → directly define object lifetime |
+
+That is:
+
+```text
+event starts
+  ↓
+propagation
+  ↓
+completion
+  ↓
+release
+```
+
+---
+
+## 6. Why Do Many Systems Avoid GC?
+
+Operating system kernels, databases, network servers, and game main loops often avoid GC. They naturally have well-defined temporal phases:
+
+```text
+Request
+  ↓
+Process
+  ↓
+Finish
+```
+
+Or a game loop:
+
+```text
+Frame
+  ↓
+Update
+  ↓
+Render
+  ↓
+Clear
+```
+
+Lifecycles come from temporal boundaries. So these systems make heavy use of:
+
+- **Arena**: allocate within a phase, free everything when the phase ends
+- **Object Pool**: reuse objects in cycles, lifetime determined by system phase
+- **Stack**: function call boundary as lifetime boundary
+- **Region Memory**: region boundary as lifetime boundary
+
+Because:
+
+> **When temporal boundaries are explicit, memory management becomes much simpler.**
+
+---
+
+## 7. Three Approaches, One Problem
+
+They all solve the same problem:
+
+> **When can a piece of data disappear in time?**
+
+The difference is how they answer it:
+
+| Mechanism | How It Answers | Where Time Lives |
+|---|---|---|
+| GC | Infer through object reachability at runtime | Implicitly inferred at runtime |
+| Rust | Prove through ownership relationships at compile time | Explicitly constrained at compile time |
+| Causal runtime | Directly define through event phases and historical boundaries | Time becomes a first-class citizen |
+
+---
+
+## Relation to Dual World Theory
+
+Dual World Theory distinguishes two layers:
+
+- **Causal Layer**: handles events, adjudicates facts, maintains history
+- **Perception Layer**: handles presentation, projection, continuous feedback
+
+The memory management problem is especially visible in the Causal Layer. Because the core of the Causal Layer is not objects but the **flow of events and facts**. An event's lifetime should not be determined by "who references it," but by "whether it has completed its role in the causal chain."
+
+This means:
+
+> **In the Causal Layer, the correct unit of memory management is not the object but the event phase on the causal chain.**
+
+When we allocate and free memory in terms of event phases, the complex reference tracing of GC and the strict ownership constraints of Rust can both potentially be replaced by simpler phase-based memory strategies.
+
+This also extends Dual World Theory from the architectural layer to the language runtime layer: if time becomes a first-class citizen, then memory, state, and lifetimes can all be organized around time rather than around spatial object graphs.

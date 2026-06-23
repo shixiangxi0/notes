@@ -64,6 +64,7 @@ const sidebars = {
           collapsed: false,
           items: [
             'dual-world-theory/实践/游戏架构实践',
+            'dual-world-theory/实践/内存管理与时间',
           ],
         },
       ],
