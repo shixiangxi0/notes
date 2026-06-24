@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+title: Causal Propagation Network
 slug: /dual-world-theory/causal-layer-mechanism
 ---
 
@@ -7,324 +8,193 @@ slug: /dual-world-theory/causal-layer-mechanism
 
 > **Events need adjudication; facts need propagation.**
 
-The Causal Layer receives external events, adjudicates them into facts, then propagates those facts to produce new events, ultimately forming a traceable history.
+The Causal Layer is a metaphor for time, and events are its smallest unit.
+
+```mermaid
+flowchart LR
+    E[Event] -->|Adjudicate| F[Fact]
+    F -->|Propagate| NE[New Event]
+    NE --> E
+```
+
+In this loop, events are input, facts are output, and propagation turns output into the next round of input. By running this cycle repeatedly, the Causal Layer turns the unordered changes of the outside world into a traceable and explainable history inside the system.
 
 ---
 
-## Events
+## Events and Facts
 
-- The basic unit of the Causal Layer: a requested change that has not yet been accepted as part of the world
-- They may come from external input or from internal propagation
+An **event** is a requested change that the world has not yet accepted. It may come from external input or from internal propagation within the Causal Layer.
 
-In games:
+A **fact** is a relational change that has been formally admitted into history after adjudication.
 
-```text
-attack_requested
-move_requested
-spell_cast_requested
-```
+The difference between them is crucial:
 
-In databases:
+- Events may conflict, be invalid, or be discarded.
+- Once a fact is established, it is not rewritten in place; later changes enter history as new facts.
+
+This means the Causal Layer does not maintain "current state"; it maintains a **continuously growing historical chain**. State is just the projection of that chain at the present moment.
 
 ```text
-UPDATE account SET balance = balance - 100
+State model:      Causal model:
+hp = 100         damage_taken
+hp = 80          damage_taken
+hp = 0           hp_depleted
+                 entity_dead
 ```
 
-In operating systems:
-
-```text
-process requests CPU time slice
-device issues interrupt
-```
-
-An event is not yet a fact. If two players try to pick up the same item at the same time:
-
-```text
-pick(A, item)  pick(B, item)
-```
-
-both events may enter the system, but they cannot both become facts.
-
----
-
-## Facts
-
-A **fact** is a relational change that has been admitted into history after adjudication.
-
-```text
-damage_applied
-hp_depleted
-entity_dead
-trade_executed
-```
-
-Facts have three important properties:
-
-- **Authority**: once accepted, a fact is not rewritten in place; later change enters history as new facts
-- **Traceability**: every fact can answer why it happened, which event triggered it, and which rules decided it
-- **Derivability**: facts derive state and may trigger new events through propagation rules
+> See also [Causal Layer](/docs/dual-world-theory/theory#causal-layer)
 
 ---
 
 ## Adjudication and Propagation
 
-The Causal Layer operates through two classes of rules:
+The Causal Layer runs on two kinds of rules:
 
-- **Adjudication rules** decide whether an event can become a fact
-- **Propagation rules** decide what new events a fact produces
+- **Adjudication rules**: decide whether an event can become a fact.
+- **Propagation rules**: decide which new events a fact produces.
 
-Its core loop is:
-
-```text
-Event -> Adjudication -> Fact -> Propagation -> New Event -> ...
-```
-
-Take a simple attack in a game:
+Take an attack in a game:
 
 ```text
-player presses attack
+Player presses attack key
         ↓
 attack_requested (event)
         ↓
-adjudication rules: target in range? skill off cooldown? dodge succeeds? buffs apply? defense reduces damage? counterattack triggered?
+Adjudication: target in range? skill off cooldown? enemy dodges? attack buff? defense mitigation? counterattack? battle cry?
         ↓
 damage_applied (fact)
         ↓
-propagation: death_check_requested (event)
+Propagation: death_check_requested (event)
         ↓
-adjudication rules: is hp below 0? fatal damage immunity? resurrection available?
+Adjudication: hp < 0? immune to fatal damage? can resurrect?
         ↓
 entity_dead (fact)
         ↓
-propagation: deathrattle, QTE, loot drop, quest update, experience gain, level-up, new plot trigger
+Propagation: deathrattle, QTE, loot drop, quest update, experience gain, level-up, plot trigger (new events)
 ```
+
+Adjudication and propagation are two sides of the same coin:
+
+> **Adjudication collapses uncertainty into facts; propagation lets facts reopen uncertainty.**
 
 ---
 
-## The Real Source of Complexity
+## Causal Propagation Network
 
-Without time, the world is only a static relational structure. Once time enters the picture, it becomes a continuously running causal propagation network:
+Without time, the world is just a static graph of relations: objects, states, and relations. Its complexity comes from scale—this is **spatial complexity**.
+
+Once time enters, complexity no longer comes from "what exists," but from **"how change propagates."** Traditional object-oriented design asks spatial questions: who owns this data? What belongs to what? But complex software truly troubles us with temporal questions: **How does one change cause others? How can the world remain stable amid endless change?**
+
+Thus, static structure becomes a **causal propagation network**.
+
+The causal propagation network is the core data model of the Causal Layer. It can be seen as a causal graph that continuously generates change, handling six basic topologies:
+
+### Six Basic Topologies
+
+**1. Branching**
+
+One fact affects multiple future events:
 
 ```text
-Static Structure (no time)        Causal Propagation Network (with time)
-
-Object                            Event
-  |                                 ↓
-State                             Fact
-  |                                 ↓
-Relation                          Event
-                                    ↓
-                                  Fact
-                                    ↓
-                                   ...
+    Fact
+   /  |  \
+  v   v   v
+ A     B     C
 ```
 
-The complexity on the left comes mostly from scale: how many objects, how many states, how many relations. That is **spatial complexity**.
+**2. Merging**
 
-The complexity on the right comes from something else:
-
-> **how change propagates**
-
-Objects, states, and modules are only the spatial containers of those propagation paths. Much of software complexity comes from managing a changing causal network:
-
-- How many places does one change affect?
-- What conditions does a result depend on?
-- When does propagation stop?
-- How does new change interrupt an older chain?
-
-That is why traditional OOP often feels strained in these systems. OOP is good at answering static questions such as "who owns this data" or "what belongs to what." Complex software often needs answers to dynamic questions about causality.
-
-### Structural Sources of Complexity
-
-Many engineering difficulties in a causal propagation network can be reduced to a handful of recurring topologies.
-
-#### 1. Branching
-
-One fact may affect several future events:
+Multiple facts jointly produce a new change:
 
 ```text
-Fact
-  |
-  +--> Event A
-  |
-  +--> Event B
-  |
-  +--> Event C
+Fact A      Fact B
+   \          /
+    v        v
+      Event C
 ```
 
-The core question is: **how far does one change fan out?**
+**3. Feedback Loop**
 
-In games:
+Propagation influences itself:
 
 ```text
-entity_dead
-    ↓
-├─ loot spawn
-├─ quest completion
-├─ aggro clear
-└─ statistics update
+A → B → C
+↑       |
+└───────┘
 ```
 
-In service systems:
+**4. Preemption**
+
+A new event interrupts an ongoing chain:
 
 ```text
-user logout
-    ↓
-clear session
-close WebSocket
-cancel task
-release resources
-clean database state
-record log
-update online status
+A → B → C
+    ↑
+    X  (new event interrupts B→C)
 ```
 
-This is the **fan-out** problem.
+**5. Delay**
 
-#### 2. Merging
-
-Several facts may jointly determine one new event:
+The effect of a fact occurs in the future:
 
 ```text
-Fact A
-    \
-     → Event C
-    /
-Fact B
-```
-
-The core question is: **what does a result depend on?**
-
-| In games | In e-commerce |
-|---|---|
-| `quest_complete + enter_scene -> trigger_boss_battle` | `inventory_available + payment_successful + risk_check_passed -> order_created` |
-
-This is closely related to pattern matching in Complex Event Processing (CEP).
-
-#### 3. Feedback Loops
-
-Propagation may circle back and affect itself:
-
-```text
-A -> B -> C -> A
-```
-
-The core question is: **when does propagation stop?**
-
-| In games | In cloud-native systems |
-|---|---|
-| `damage -> thorn_damage -> damage -> thorn_damage` | `load_change -> autoscale -> traffic_change -> load_change -> autoscale_again` |
-
-This is why the Causal Layer needs termination mechanisms such as time windows, count limits, preemption, and resource bounds.
-
-#### 4. Preemption
-
-New events may interrupt an ongoing propagation chain.
-
-The core question is: **what must be interruptible, what must remain atomic, and what must support rollback?**
-
-For example:
-
-| System | Ongoing chain | Preempting event | Result |
-|---|---|---|---|
-| Operating system | Process execution | High-priority interrupt | CPU is preempted |
-| Game | Death propagation in progress | Resurrection event arrives | Death propagation is aborted and resurrection takes priority |
-
-#### 5. Delay
-
-The effect of a fact may occur later:
-
-```text
-skill cast
-   |
-0.5 seconds
-   ↓
-hit check
-```
-
-Or:
-
-```text
-order created
-   |
+Order created
+    |
 30 minutes
-   ↓
-order timeout
+    ↓
+Order timeout
 ```
 
-The core question is: **when does a change take effect?**
+**6. Competition and Ordering**
 
-That is why systems need timers, scheduling, preemption, and lifecycle management.
-
-#### 6. Competition and Ordering
-
-Several events may compete for the same future fact:
+Multiple events shape one fact:
 
 ```text
-Event A
-    \
-     → Fact C
-    /
-Event B
+Event A     Event B
+   \           /
+    v         v
+      Fact C
 ```
 
-All such competition must eventually collapse into a clear causal order.
+### Topology-to-Engineering Mapping
 
-In practice, these problems show up in message queues, schedulers, locks, atomic operations, and related mechanisms.
+| Causal Complexity | Engineering Manifestation | Typical Techniques |
+|---|---|---|
+| Branching | One change affects many modules | Event bus, pub-sub, Observer, message queues |
+| Merging | Multiple conditions jointly determine behavior | State machines, rule engines, CEP, workflow |
+| Feedback loop | Changes keep influencing each other | Feedback control, transaction boundaries, iteration limits, resource bounds |
+| Delay | A change takes effect later | Timer, scheduler, job queue, cron, timeout |
+| Preemption | New events interrupt old processes | Interrupts, cancellation tokens, rollback, state-machine switching |
+| Competition and ordering | Multiple changes contest one outcome | Locks, CAS, transactions, consensus, schedulers |
 
-Once a system contains enough events, conflicts, timing races, and synchronization concerns, the need for a Causal Layer starts to emerge naturally. The question is not whether causality exists, but whether it is handled explicitly and centrally or implicitly and diffusely.
+**Objects, states, and modules are merely spatial containers of propagation paths. The seemingly unrelated fields of software engineering—concurrency, distributed systems, transactions, interrupts, timeouts, feedback control—are all manifestations of the same causal propagation network under different constraints.**
 
-Traditional software engineering often separates these difficulties into different fields such as concurrency, distributed systems, lifecycle management, interrupts, timeouts, or feedback control. Underneath, they are all manifestations of the same causal propagation network under different constraints.
+---
 
 ## Core Properties
 
-### 1. Adjudicability
+For the Causal Layer to operate reliably, it must have four properties:
 
-For conflicting events:
+**Adjudicability**: Conflicts cannot remain unresolved forever; the system must produce a clear factual version.
 
-```text
-A wants to modify X
-B wants to modify X
-```
+**Determinism**: The same historical facts, events, and rules must yield the same result.
 
-the system must produce a result. It cannot leave the conflict permanently unresolved.
+**Traceability**: Every fact can be embedded in a complete causal chain, not isolated as `Enemy.dead = true`.
 
-### 2. Determinism
+**Convergence**: Any causal propagation within a finite scope must end in finite time.
 
-The same facts, events, and rules must produce the same result. The Causal Layer maintains authoritative facts, so its outcomes must be deterministic.
-
-### 3. Traceability
-
-Every fact should sit inside a complete causal chain:
-
-```text
-player attacks -> hit check -> damage dealt -> hp depleted -> death
-```
-
-not merely:
-
-```text
-Enemy.dead = true
-```
-
-because that says nothing about who caused it.
-
-### 4. Convergence
-
-**Any causal propagation inside a finite scope should end within finite time.**
+Convergence is the most important of the four; the others exist mainly to guarantee it. It is the fundamental assurance that the world can run stably. See [Eventual Causal Consistency](/docs/dual-world-theory/theory#eventual-causal-consistency).
 
 ---
 
 ## Causal Layers Across Different Systems
 
-Different kinds of complex software instantiate the same pattern under different constraints:
-
 | System | Event | Adjudication Rules | Fact |
 |---|---|---|---|
-| Game server | Player actions | Hit checks, damage rules | Authoritative factual version admitted into history |
+| Game server | Player actions | Hit checks, damage rules | Authoritative factual version |
 | Database | Transaction requests | Isolation levels, constraints | Committed data version |
 | Operating system | Interrupts, syscalls | Scheduling, permission checks | Resource allocation outcome |
-| Blockchain | Broadcast transactions | Consensus, signature verification | Confirmed on-chain transaction |
+| Blockchain | Broadcast transactions | Consensus, signature verification | On-chain transaction |
 | Exchange | Submitted orders | Matching rules, price priority | Trade record |
 
 Same structure, different constraints.
@@ -333,12 +203,15 @@ Same structure, different constraints.
 
 ## Summary
 
-> **The Causal Layer is the only channel through which world facts are formed. Through the loop of Event -> Adjudication -> Fact -> Propagation, a continuously changing system turns noise into stable, explainable, and traceable history.**
+> **The Causal Layer is the only channel through which world facts are formed. Through the loop of Event → Adjudication → Fact → Propagation, it turns continuous change into stable, explainable, and traceable history.**
+
+The hardest part of complex software is not objects and states, but **how change unfolds in time**. The causal propagation network offers a perspective: do not ask what the system contains; ask what happens in it, why it happens, and what consequences it brings.
 
 ---
 
 ## Related Reading
 
-- [Causality-Oriented](/docs/dual-world-theory/core-concepts): Precise definitions of events, rules, and facts.
-- [Dual World Theory](/docs/dual-world-theory/theory): The philosophical argument behind the two-layer model.
-- [Game Architecture Practice](/docs/dual-world-theory/practice): How this mechanism can be implemented in games.
+- [Causality-Oriented](/docs/dual-world-theory/core-concepts)
+- [Dual World Theory: Causal Layer](/docs/dual-world-theory/theory#causal-layer)
+- [Game Architecture Practice](/docs/dual-world-theory/practice)
+- [GC-Free Programming: Space and Time](/docs/dual-world-theory/practice/gc-free-programming-space-and-time)
