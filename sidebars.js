@@ -23,6 +23,7 @@ const labels = {
   theory: isEn ? 'Theory' : '理论',
   practice: isEn ? 'Practice' : '实践',
   about: isEn ? 'About' : '关于',
+  appendix: isEn ? 'Appendix' : '附录',
 };
 
 const sidebars = {
@@ -76,7 +77,14 @@ const sidebars = {
       items: [
         'about/关于双世界',
         'about/关于作者',
-        'about/alan-kay-on-oop',
+      ],
+    },
+    {
+      type: 'category',
+      label: labels.appendix,
+      collapsed: false,
+      items: [
+        'appendix/alan-kay-on-oop',
       ],
     },
   ],
