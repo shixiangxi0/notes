@@ -137,32 +137,17 @@ damage_applied
 entity_dead
 ```
 
-The lifecycle is naturally:
+Once `damage_applied` has been adjudicated and fully propagated, the preceding `attack_requested` can be declared dead. Once `entity_dead` has been consumed, the intermediate `damage_applied` can enter reclamation. There is no need to scan reference graphs or prove ownership chains.
 
-```text
-attack_requested
-        |
-        | propagation complete
-        v
-      release
-```
+**Because temporal boundaries are themselves lifecycle boundaries.**
 
-There is no need to ask:
-
-```text
-Who references attack?
-Who owns attack?
-```
-
-Because time already tells you:
-
-> **The lifetime of this event is over.**
-
-> **When temporal boundaries are explicit, memory management becomes much simpler.**
+**When temporal boundaries are explicit, memory management naturally becomes much simpler.**
 
 This is what Dual World Theory advocates: **causality must be made explicit, and time must become a first-class citizen.**
 
-Compared with its predecessors, this is a completely different and much simpler philosophy of memory management:
+The best solutions in software engineering history are rarely those that make the original problem more efficient. More often, they introduce a new abstraction layer that changes the problem's domain entirely.
+
+Compared with its predecessors, this is a completely different and radically simpler philosophy of memory management:
 
 | Mechanism | Core Logic | Temporal Relationship |
 |---|---|---|
@@ -170,6 +155,18 @@ Compared with its predecessors, this is a completely different and much simpler 
 | Rust | Prove through ownership relationships at compile time | Explicitly constrained at compile time |
 | Causal runtime | Directly define through event phases and historical boundaries | Time and space as equal first-class citizens |
 
-Causality-Oriented requires developers to explicitly distinguish the **Causal Layer** from the **Perception Layer**. The causal runtime handles conflict, adjudication, and propagation; it is the truth of the world and represents the temporal metaphor. The perception layer's spatial components unfold in parallel without races; it is the presentation of the world and represents the spatial metaphor.
+The data model of the Causal Layer is discussed in [Causal Propagation Network](/docs/dual-world-theory/causal-layer-mechanism).
+
+Causality-Oriented holds that software engineering contains two fundamentally different computational essences:
+
+**Time dimension**: competition, ordering, propagation, lifecycle, consistency.
+
+**Space dimension**: scale, organization, nesting, rendering, resource management.
+
+This requires developers to explicitly distinguish the **Causal Layer** from the **Perception Layer**. The causal runtime resolves conflicts in time and establishes a single history; the perception runtime unfolds that already-determined history in space.
+
+The causal runtime handles conflict, adjudication, and propagation. It is the truth of the world and represents the temporal metaphor.
+
+The perception runtime lets all spatial components unfold in parallel without races. It is the presentation of the world and represents the spatial metaphor.
 
 The two are irreducible and must not be confused.
