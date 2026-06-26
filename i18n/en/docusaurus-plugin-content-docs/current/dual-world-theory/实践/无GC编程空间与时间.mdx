@@ -4,7 +4,7 @@ title: "GC-Free Programming: Space and Time"
 slug: /dual-world-theory/practice/gc-free-programming-space-and-time
 ---
 
-# Memory Management as Time Management
+# GC-Free Programming: Space and Time
 
 In software engineering, memory management is usually discussed as a spatial problem:
 
@@ -137,7 +137,7 @@ damage_applied
 entity_dead
 ```
 
-Once `damage_applied` has been adjudicated and fully propagated, the preceding `attack_requested` can be declared dead. Once `entity_dead` has been consumed, the intermediate `damage_applied` can enter reclamation. There is no need to scan reference graphs or prove ownership chains.
+Once `damage_applied` has been adjudicated and fully propagated, the preceding `attack_requested` has served its purpose and can be released. Once `entity_dead` has been consumed, the intermediate `damage_applied` can enter reclamation. There is no need to scan reference graphs or prove ownership chains.
 
 **Because temporal boundaries are themselves lifecycle boundaries.**
 
@@ -151,7 +151,7 @@ Compared with its predecessors, this is a completely different and radically sim
 
 | Mechanism | Core Logic | Temporal Relationship |
 |---|---|---|
-| Traditional OOP languages | Infer through object reachability at runtime | Implicitly inferred at runtime |
+| Java, Go, C#, JavaScript | Infer through object reachability at runtime | Implicitly inferred at runtime |
 | Rust | Prove through ownership relationships at compile time | Explicitly constrained at compile time |
 | Causal runtime | Directly define through event phases and historical boundaries | Time and space as equal first-class citizens |
 
