@@ -1,6 +1,6 @@
 # Dual World Theory
 
-Architecture notes on causal-oriented modeling for complex systems.
+Architecture notes on causality-oriented modeling for complex systems.
 
 Built with [Docusaurus](https://docusaurus.io/).
 
@@ -17,7 +17,7 @@ npm run dev
 npm run build
 ```
 
-Output goes to the `build/` directory.
+Build output is written to the `build/` directory.
 
 ## Structure
 
