@@ -71,57 +71,33 @@ External World <- Perception Layer presents <- consumes fact <- emits fact
 
 ### Causal Layer {#causal-layer}
 
-There is an old philosophical question: what is the world made of? One answer points to substances and entities; another points to relations and process. The Causal Layer is rooted in the process philosophy tradition: relations and becoming, rather than substances and entities.
+There is an old philosophical question: what is the world made of? One answer points to substances and entities, as in object-oriented thinking; another points to relations and process — that is, process philosophy. The Causal Layer is rooted in process philosophy.
 
-State answers one question:
+State answers one question: "What is the world like right now?" But any system that persists must also answer: "Why did the world become this way?"
 
-What is the world like right now?
+Therefore, the essence of the Causal Layer is to preserve **historical continuity** and **causal explainability**. State is merely the current projection of historical facts — if the events that produced the state are missing, the state itself loses most of its meaning.
 
-But any system that persists must also answer another:
+The external world is inherently disordered, concurrent, and potentially conflicting. The Causal Layer turns external change into stable, traceable history through **adjudication**:
 
-Why did the world become this way? What caused the state to change?
+- **Validity checks**: does this request meet the conditions required to take effect?
+- **Semantic transformation**: what does this event actually mean in context?
+- **Conflict adjudication**: when events collide, which factual version enters history?
 
-The essence of the Causal Layer is to preserve historical continuity and causal explainability.
+### Perception Layer {#perception-layer}
 
-Consider a player's attack:
+The Perception Layer answers: how is the world experienced and presented?
 
-```text
-attack initiated
-  ↓
-damage dealt
-  ↓
-hp reaches zero
-  ↓
-character dies
-```
+The Causal Layer produces discrete facts. The Perception Layer unfolds those facts into continuous experience: interface refreshes, animated transitions, sound feedback, haptic alerts, data visualization. "Save succeeded" unfolds from a single record into a progress bar filling, a checkmark appearing, a toast fading out.
 
-State is merely the current projection of those historical facts:
+Between facts, the Perception Layer is free.
 
-```text
-Player.hp = 0
-Player.dead = true
-```
+It may interpolate, predict, and choreograph. Buttons may scale on press, numbers may roll up, pages may transition smoothly. These are all local states. They affect only presentation, not the world itself.
 
-**If the events that produced the state are missing, the state itself loses most of its meaning.**
+Perception components are organized in space. Spatial hierarchy replaces call chains as the way components relate. A dropdown menu is nested within a navigation bar, so it moves with the navigation bar.
 
-The external world tends toward entropy-increasing disorder. Changes arrive all at once, without explanation, without trust, and often in conflict.
+The Perception Layer only reads facts and maintains local state, so it is naturally race-free. Many components can unfold in parallel.
 
-Any system that wants to persist therefore needs a mechanism for turning external change into stable, traceable history. In Dual World Theory, that mechanism is called **adjudication**.
-
-It includes at least three kinds of work:
-
-- **Validity checks**: does this request meet the conditions required to take effect? Is the caster silenced? Is the balance sufficient? Does the account pose a risk?
-- **Semantic transformation**: what does this event actually mean in context? Is the hit a normal hit, a critical hit, or a dodge? Is the transaction successful, failed, or rolled back?
-- **Conflict adjudication**: when events collide or arrive "simultaneously," which factual version enters history?
-
-Examples:
-
-> - When an operating system receives a syscall or an interrupt, the kernel must decide who gets CPU time and which operation proceeds first.
-> - When two runners cross the finish line almost simultaneously, the crowd may not know who won, but the official record must still name an order.
-> - When two blockchain transactions attempt to spend the same asset, both may be broadcast and observed, but only one historical ordering can become canonical.
-> - In an FPS game, two players may fire at nearly the same time, but the server still has to determine who hit first and who died first.
-
-This is why explainability matters. External change is noisy, concurrent, and often conflicting. If a fact cannot be traced to its source, then the state derived from it cannot explain how it came to be.
+The only constraint is at the boundary. When a new fact arrives, the Perception Layer must acknowledge the latest version and switch quickly.
 
 ---
 
