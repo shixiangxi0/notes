@@ -50,8 +50,36 @@ hp = 0           hp_depleted
 
 The Causal Layer runs on two kinds of rules:
 
-- **Adjudication rules**: decide whether an event can become a fact.
-- **Propagation rules**: decide which new events a fact produces.
+- **Adjudication rules**: decide whether an event can become a fact. From the application-layer perspective, an adjudication rule is a computation rule:
+
+  ```text
+  (event, history) => Fact | null
+  ```
+
+  It has two internal steps:
+  - **Qualification check**: does the event satisfy the preconditions?
+  - **Fact generation**: produce the factual content from the input.
+
+  The ordering among events is guaranteed by the system-level ordering mechanism; it is not something the application-layer computation rule handles.
+
+- **Propagation rules**: decide which new events a fact produces, advancing the next cycle.
+
+Adjudication rules are essentially stateless pure functions. Given an event and the current fact history, they output a new fact or a rejection. When events arrive, whether they are concurrent, or whether they conflict is not their concern.
+
+Locks, CAS, and similar concurrency primitives were born from the von Neumann shared-memory model: multiple execution streams read and write the same memory concurrently, so mechanisms are needed to protect that memory from corruption. From the causal perspective, competition and ordering are handled by the system ordering mechanism, and business code no longer directly faces these primitives.
+
+<details>
+<summary>Engineering detail: where is the ordering mechanism implemented?</summary>
+
+- **Von Neumann architecture-level change**: redesign hardware or the instruction set to natively support event ordering and causal history. From application to hardware, no locks are needed; events are processed sequentially as minimal atomic units.
+- **Programming language / runtime abstraction**: implement the ordering mechanism on top of existing von Neumann hardware. The application layer is lock-free; whether the runtime itself is lock-free depends on the implementation:
+  - Single-threaded event loop: ordering is the event queue, naturally lock-free (similar to the JS main loop or Redis command processing);
+  - Multi-threaded runtime: the ordering queue may still need locks or atomic operations internally, but these are not exposed to the application layer.
+- **Distributed implementation**: multiple nodes do not share memory, so there is no lock problem. Nodes pass events through message queues and reach agreement on a global order via consensus protocols (such as Raft, Paxos, or blockchain).
+
+Conclusion: **the application layer is always lock-free; whether the lower layer needs locks depends on the implementation level and architectural choice of the ordering mechanism.**
+
+</details>
 
 Take an attack in a game:
 
@@ -60,13 +88,17 @@ Player presses attack key
         ↓
 attack_requested (event)
         ↓
-Adjudication: target in range? skill off cooldown? enemy dodges? attack buff? defense mitigation? counterattack? battle cry?
+Adjudication rule (computation rule):
+  ├── Qualification check: target in range? skill off cooldown? enemy dodge check?
+  └── Fact generation: attack × buff − defense = damage
         ↓
 damage_applied (fact)
         ↓
 Propagation: death_check_requested (event)
         ↓
-Adjudication: hp < 0? immune to fatal damage? can resurrect?
+Adjudication rule (computation rule):
+  ├── Qualification check: hp < 0? immune to fatal damage? can resurrect?
+  └── Fact generation: determine death fact and derived values
         ↓
 entity_dead (fact)
         ↓
@@ -79,6 +111,17 @@ Adjudication and propagation are two sides of the same coin:
 
 ---
 
+## Engineering Contract
+
+This is the most important engineering convention of causal orientation:
+
+| Layer | Responsibility | Implemented by |
+|---|---|---|
+| **Business-rule layer** | Computation rules, propagation rules, perception layer | Business developers |
+| **Causal runtime layer** | Atomic ordering mechanism, rule scheduling | Framework / middleware |
+
+---
+
 ## Causal Propagation Network
 
 Without time, the world is just a static graph of relations: objects, states, and relations. Its complexity comes from scale—this is **spatial complexity**.
@@ -88,6 +131,12 @@ Once time enters, complexity no longer comes from "what exists," but from **"how
 Thus, static structure becomes a **causal propagation network**.
 
 The causal propagation network is the core data model of the Causal Layer. It can be seen as a causal graph that continuously generates change, handling six basic topologies:
+
+:::note
+
+**The ordering mechanism guarantees the order in which events enter the network, but it is not itself a network topology.** Competition and ordering are handled by the ordering mechanism and should not be treated as questions of how changes connect and flow.
+
+:::
 
 ### Six Basic Topologies
 
@@ -145,15 +194,18 @@ Order created
 Order timeout
 ```
 
-**6. Competition and Ordering**
+**6. Computation**
 
-Multiple events shape one fact:
+Multiple inputs jointly produce one fact through a deterministic rule. A computation rule itself is timeless, concurrent-free, and conflict-free; it only cares whether the result is correct:
 
 ```text
-Event A     Event B
-   \           /
-    v         v
-      Fact C
+Event A     Event B     Fact D
+   \           /          /
+    v         v          /
+      [Computation rule] ←──────
+         |
+         v
+       Fact C
 ```
 
 ### Topology-to-Engineering Mapping
@@ -165,7 +217,7 @@ Event A     Event B
 | Feedback loop | Changes keep influencing each other | Feedback control, transaction boundaries, iteration limits, resource bounds |
 | Delay | A change takes effect later | Timer, scheduler, job queue, cron, timeout |
 | Preemption | New events interrupt old processes | Interrupts, cancellation tokens, rollback, state-machine switching |
-| Competition and ordering | Multiple changes contest one outcome | Locks, CAS, transactions, consensus, schedulers |
+| Computation | Multiple inputs produce one fact through deterministic rules | Pure functions, formula systems, type-safe rule engines, deterministic state machines |
 
 **Objects, states, and modules are merely spatial containers of propagation paths. The seemingly unrelated fields of software engineering—concurrency, distributed systems, transactions, interrupts, timeouts, feedback control—are all manifestations of the same causal propagation network under different constraints.**
 
