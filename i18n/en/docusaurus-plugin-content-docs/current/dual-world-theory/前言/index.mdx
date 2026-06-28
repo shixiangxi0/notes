@@ -5,24 +5,25 @@ pagination_next: dual-world-theory/前言/引子
 
 # Preface
 
-When people talk about software complexity, they usually point to scope creep, team size, technical debt, or the complexity of the problem domain itself. All of those explanations are valid, but they mostly describe symptoms rather than the modeling-level source.
+I keep returning to one question: do many of the difficulties in today's programming models originate in the von Neumann architecture itself? And if so, how could we make a genuinely fundamental improvement?
 
-This project starts from a more fundamental observation: a large class of complexity in modern software comes from using spatial organization to encode temporal evolution. That coupling is not a flaw in any one framework or language. It is a deep modeling habit inherited from the von Neumann architecture and reinforced by object-oriented design.
+The von Neumann model is built around memory, state, instructions, and state transitions. Memory is space; data lives at addresses; programs read and write that space. At its core, this is a **spatial metaphor**.
 
-Dual World Theory is an attempt to offer a different modeling approach for complex software systems, along with a theoretical basis for that approach.
+More deeply, the von Neumann architecture encodes both instructions and data as contents of the same addressable memory. Instructions stand for time; data stands for space. The complexity of programming is then passed up through every layer: from the architecture to the operating system, and from the operating system to the programming language. The result is that **space becomes coupled with time**.
 
-Traditional software modeling is better at understanding a system as a set of objects, states, and relations arranged in space. It usually begins with module boundaries, object ownership, interface calls, and state holding, and only then turns to temporal concerns such as events, synchronization, consistency, history, and feedback.
+Take garbage collection. A GC algorithm traverses `Root → Object Graph`, keeps what is reachable, and deletes what is not. This is **inferring time from space**. But what if we thought differently? A piece of data disappears not when it becomes unreachable, but when its causal role is finished—as Event Sourcing and event-driven architectures already suggest. If we model systems as flows of events rather than as objects, the whole picture changes.
 
-Dual World Theory reverses that emphasis. It treats a system as an ongoing process in time: external input enters the system, is interpreted, adjudicated, folded into history, and turned into a new factual version of the world, which is then perceived, consumed, and responded to by different participants.
+At a deeper level, we have been replacing **event + causal history** with **state + state transition**, and pushing the resulting complexity upward until it lands in the programming language, where it appears as object-oriented programming. OOP bundles state (space) with behavior (time). Every object becomes a small, self-contained loop with its own private timeline, and the state space of the whole system explodes.
 
-It therefore does not care about objects themselves; it cares about:
+I believe **time has been badly underestimated in modern programming models**. Time should not be merely a physical clock. It can itself be treated as a formalizable data structure. Events are not simply placed inside time; rather, the relationships between events *are* time. Time can be expressed as a causal model, and a causal model can be seen as a dynamic graph of propagation: A causes B, B causes C—the simplest serial causal chain is just one instance of this.
 
-- How events enter the system
-- How facts are formed
-- How causality continues
-- How history is preserved
-- How the world is perceived and projected
+More broadly, software engineering is a projection of the real world. Time and space differ fundamentally in their mathematical and physical nature, and they must be handled separately. **Causality must be made explicit, and time and space must both be first-class citizens.**
 
-This modeling approach is called **Causality-Oriented** modeling.
+Therefore, a running system must clearly separate two different things:
 
-For systems that run continuously, interact constantly, and must keep absorbing change, a causality-oriented approach is more direct, simpler, more scalable, and easier to maintain.
+- **Causal runtime**: responsible for resolving conflicts in time—competition, ordering, propagation, lifecycle, consistency—and establishing a single history. It is the metaphor of time.
+- **Perceptual runtime**: lets all spatial components unfold in parallel without races—scale, organization, nesting, rendering, resource management—and presents the already-determined history in space. It is the metaphor of space.
+
+The two must not be confused, and neither can replace the other.
+
+This is the core idea of Causality-Oriented modeling.
