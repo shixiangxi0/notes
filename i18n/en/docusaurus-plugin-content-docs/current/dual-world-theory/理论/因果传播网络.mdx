@@ -69,15 +69,15 @@ Adjudication rules are essentially stateless pure functions. Given an event and 
 Locks, CAS, and similar concurrency primitives were born from the von Neumann shared-memory model: multiple execution streams read and write the same memory concurrently, so mechanisms are needed to protect that memory from corruption. From the causal perspective, competition and ordering are handled by the system ordering mechanism, and business code no longer directly faces these primitives.
 
 <details>
-<summary>Engineering detail: where is the ordering mechanism implemented?</summary>
+<summary>Engineering detail</summary>
 
-- **Von Neumann architecture-level change**: redesign hardware or the instruction set to natively support event ordering and causal history. From application to hardware, no locks are needed; events are processed sequentially as minimal atomic units.
-- **Programming language / runtime abstraction**: implement the ordering mechanism on top of existing von Neumann hardware. The application layer is lock-free; whether the runtime itself is lock-free depends on the implementation:
-  - Single-threaded event loop: ordering is the event queue, naturally lock-free (similar to the JS main loop or Redis command processing);
-  - Multi-threaded runtime: the ordering queue may still need locks or atomic operations internally, but these are not exposed to the application layer.
-- **Distributed implementation**: multiple nodes do not share memory, so there is no lock problem. Nodes pass events through message queues and reach agreement on a global order via consensus protocols (such as Raft, Paxos, or blockchain).
+Levels at which the ordering mechanism can be implemented:
 
-Conclusion: **the application layer is always lock-free; whether the lower layer needs locks depends on the implementation level and architectural choice of the ordering mechanism.**
+- **Von Neumann architecture level**: redesign hardware to natively support event ordering; ideally lock-free.
+- **Language / runtime level**: single-threaded event loops are naturally lock-free; multi-threaded runtimes may still need locks internally.
+- **Distributed level**: global order is reached through message queues and consensus protocols.
+
+Conclusion: the application layer is lock-free; whether the lower layer is lock-free depends on the implementation. This event-driven structure resembles the Actor model, but Actor rules are scattered across individual actors, whereas dual-world theory emphasizes a unified fact history and eventual causal consistency.
 
 </details>
 
@@ -124,11 +124,7 @@ This is the most important engineering convention of causal orientation:
 
 ## Causal Propagation Network
 
-Without time, the world is just a static graph of relations: objects, states, and relations. Its complexity comes from scale—this is **spatial complexity**.
-
-Once time enters, complexity no longer comes from "what exists," but from **"how change propagates."** Traditional object-oriented design asks spatial questions: who owns this data? What belongs to what? But complex software truly troubles us with temporal questions: **How does one change cause others? How can the world remain stable amid endless change?**
-
-Thus, static structure becomes a **causal propagation network**.
+Without time, the world is just a static graph of relations; with time, static structure becomes a **causal propagation network**.
 
 The causal propagation network is the core data model of the Causal Layer. It can be seen as a causal graph that continuously generates change, handling six basic topologies:
 
@@ -236,20 +232,6 @@ For the Causal Layer to operate reliably, it must have four properties:
 **Convergence**: Any causal propagation within a finite scope must end in finite time.
 
 Convergence is the most important of the four; the others exist mainly to guarantee it. It is the fundamental assurance that the world can run stably. See [Eventual Causal Consistency](/docs/dual-world-theory/theory#eventual-causal-consistency).
-
----
-
-## Causal Layers Across Different Systems
-
-| System | Event | Adjudication Rules | Fact |
-|---|---|---|---|
-| Game server | Player actions | Hit checks, damage rules | Authoritative factual version |
-| Database | Transaction requests | Isolation levels, constraints | Committed data version |
-| Operating system | Interrupts, syscalls | Scheduling, permission checks | Resource allocation outcome |
-| Blockchain | Broadcast transactions | Consensus, signature verification | On-chain transaction |
-| Exchange | Submitted orders | Matching rules, price priority | Trade record |
-
-Same structure, different constraints.
 
 ---
 
