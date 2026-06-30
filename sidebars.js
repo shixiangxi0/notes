@@ -65,7 +65,6 @@ const sidebars = {
           collapsed: false,
           items: [
             'dual-world-theory/实践/游戏架构实践',
-            'dual-world-theory/实践/无GC编程空间与时间',
           ],
         },
       ],
