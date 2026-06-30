@@ -66,6 +66,8 @@ The Causal Layer runs on two kinds of rules:
 
 Adjudication rules are essentially stateless pure functions. Given an event and the current fact history, they output a new fact or a rejection. When events arrive, whether they are concurrent, or whether they conflict is not their concern.
 
+From the perspective of time, the Causal Layer does not recognize "simultaneity." Events that appear concurrent are arranged into a sequence by the ordering mechanism before adjudication; the rule sees one input after another, never concurrency. This resonates with the functional-programming worldview: no true simultaneity, only mappings from input to output.
+
 Locks, CAS, and similar concurrency primitives were born from the von Neumann shared-memory model: multiple execution streams read and write the same memory concurrently, so mechanisms are needed to protect that memory from corruption. From the causal perspective, competition and ordering are handled by the system ordering mechanism, and business code no longer directly faces these primitives.
 
 <details>
