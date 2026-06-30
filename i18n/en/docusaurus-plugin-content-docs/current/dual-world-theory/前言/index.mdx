@@ -19,13 +19,13 @@ Is this fundamental mismatch—using spatial syntax to solve temporal problems�
 
 The von Neumann architecture is built around memory, state, instructions, and state transitions. Memory is space; data lives at addresses; programs are read and write operations on that space. At its core, this is a **spatial metaphor**.
 
-More deeply, the von Neumann architecture encodes both instructions and data as contents of the same addressable memory: **instructions stand for time, and data stands for space**. The complexity of programming is then passed up through every layer—from the architecture to the operating system, and from the operating system to the programming language. The result is that **space becomes coupled with time**.
+More deeply, the von Neumann architecture encodes both instructions and data as contents of the same addressable memory: **instructions metaphorically stand for time, and data metaphorically stands for space**. The complexity of programming is then passed up through every layer—from the architecture to the operating system, and from the operating system to the programming language. The result is that **space becomes coupled with time**.
 
 Take garbage collection. A GC algorithm traverses `Root → Object Graph`, keeps what is reachable, and deletes what is not. This is **inferring time from space**. But what if we thought differently? A piece of data disappears not when it becomes unreachable in space, but when its causal role in time is finished—as Event Sourcing and event-driven architectures already suggest. If we model systems on a causal basis, the whole system appears as flows of changes among events.
 
 At a deeper level, we have been replacing **event + causal history** with **state + state transition**, and pushing the resulting complexity upward until it lands in high-level programming languages, where it appears as object-oriented programming.
 
-Object-oriented programming bundles state (space) with behavior (time). Every object becomes a small, self-contained state machine with its own private timeline. The state space of the whole system explodes, while a unified causal narrative is shattered into the private spaces of countless objects.
+Object-oriented programming bundles state (space) with behavior (time). Every object becomes a small, self-contained state machine with its own private timeline. The state space of the whole system explodes exponentially, while a unified causal narrative is shattered into the private spaces of countless objects.
 
 I believe **time has been badly underestimated in modern programming models**. Time should not be merely a physical clock. It can itself be treated as a formalizable, fundamental data structure. Events are not simply placed inside time; rather, **the relationships between events are time itself**. Time can be expressed as a causal model, and a causal model can be seen as a dynamic graph of propagation: A causes B, B causes C—the simplest serial causal chain is just one instance of this.
 
@@ -44,16 +44,22 @@ This is the core claim of causality-oriented design.
 
 ## About Dual-World Theory
 
-> Life feeds on negative entropy. — Erwin Schrödinger
+> What an organism feeds upon is negative entropy. — Erwin Schrödinger
 
 A system that must persist in time must simultaneously face two worlds.
 
-The **external world** is entropic, chaotic, and parallel. It contains infinite possibilities, yet there is no necessity, only contingency. The **internal world** is the order that the system extracts from this chaos—a low-entropy, narratable causal history. The more "advanced" a system is, the more it can explain a rich perceptual world with a minimal causal structure.
+The **external world** is entropic, chaotic, and parallel. It contains infinite possibilities, yet there is no necessity, only contingency.
 
-The Causal Layer is this process of entropy reduction itself: it turns unordered changes into stable causality through adjudication and serialization. The Perceptual Layer is the system's contact surface with the external world and the source of entropy. It continuously draws external chaos into the system, allowing the Causal Layer to reduce its entropy; at the same time, it unfolds the already confirmed factual history into rich continuous experience.
+The **internal world** is the order that the system extracts from this chaos—a low-entropy, narratable causal history.
+
+The more "advanced" a system is, the more it can explain a rich perceptual world with a minimal causal structure.
+
+The Causal Layer is this process of entropy reduction itself: it turns unordered changes into stable causality through adjudication and serialization.
+
+The Perceptual Layer is the system's contact surface with the external world and the source of high entropy. It continuously draws external chaos into the system, allowing the Causal Layer to reduce its entropy; at the same time, it unfolds the already confirmed factual history into rich continuous experience.
 
 There is therefore no true parallelism in the macro world. What we call parallelism is only the projection of a serial causal history into space. This is not because we have chosen serialization, but because understanding itself requires serialization. Serialization is entropy reduction; it is the establishment of a narratable causal history. The Causal Layer is therefore not an engineering choice, but the logical precondition of any act of understanding.
 
 For a software system, a life, a nation, or even a civilization, the direction of time is the direction of continuous entropy reduction.
 
-This is the core of Dual-World Theory.
+This is the core claim of Dual-World Theory.
