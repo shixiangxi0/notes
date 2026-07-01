@@ -60,8 +60,6 @@ The Causal Layer runs on two kinds of rules:
   - **Qualification check**: does the event satisfy the preconditions?
   - **Fact generation**: produce the factual content from the input.
 
-  The ordering among events is guaranteed by the system-level ordering mechanism; it is not something the application-layer computation rule handles.
-
 - **Propagation rules**: decide which new events a fact produces, advancing the next cycle.
 
 Adjudication rules are essentially stateless pure functions. Given an event and the current fact history, they output a new fact or a rejection. When events arrive, whether they are concurrent, or whether they conflict is not their concern.
