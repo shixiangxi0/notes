@@ -103,14 +103,14 @@ Trying to guarantee synchronization by moving all state into the Causal Layer us
 
 ## Relation to Other Concepts
 
-- **The Causal Layer is not the same as Event Sourcing**: Event Sourcing assumes that events are already facts and focuses on storage and replay. The Causal Layer treats events as inputs that still need interpretation. They may conflict, they may be invalid, and they only become facts after adjudication.
+- **The Causal Layer is not the same as Event Sourcing**: Event Sourcing assumes that events are already facts and focuses on storage and replay. The Causal Layer treats events as inputs that still need interpretation. They may conflict, they may be invalid, and they only become facts after adjudication. The Causal Layer may use Event Sourcing as a storage technique, but Event Sourcing itself does not include interpretation, adjudication, or consistency guarantees.
 - **The Perception Layer is not the same as the View in MVC**: a View is usually passive. The Perception Layer also detects input, segments change into events, and organizes continuous feedback without directly altering world facts.
-- **Eventual Causal Consistency is not the same as eventual consistency**: eventual consistency is primarily about state convergence. Eventual Causal Consistency is about participants eventually facing the same factual version of the world.
+- **Eventual Causal Consistency is not the same as eventual consistency**: in distributed systems, eventual consistency allows temporary divergence but ultimately converges on state. In Eventual Causal Consistency, each participant's projection of facts may be incomplete, but all participants must eventually face the same factual version of the world; the emphasis is on causality.
 
 ---
 
 ## Related Reading
 
-- [Dual World Theory](/docs/dual-world-theory/theory): A deeper philosophical account of the two-layer model through entropy, order, and explainability.
+- [Dual World Theory](/docs/dual-world-theory/theory): A deeper philosophical account of the two-layer model.
 - [Causal Propagation Network](/docs/dual-world-theory/causal-layer-mechanism): Events, rules, facts, and the sources of complexity inside the Causal Layer.
 - [Game Architecture Practice](/docs/dual-world-theory/practice): How the two-layer model can be implemented in a game engine.
