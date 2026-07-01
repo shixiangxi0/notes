@@ -13,7 +13,7 @@ The von Neumann model is built around memory, state, instructions, and state tra
 
 That model is extraordinarily powerful, but it is also, fundamentally, a **spatial metaphor**.
 
-Object-oriented programming inherits that worldview and refines it through classes, objects, inheritance, and composition. An object is a named space; a method is an operation performed on that space. OOP is rich in spatial metaphors such as containment, hierarchy, nesting, and structure, but comparatively weak in temporal ones such as events, evolution, adjudication, and causality.
+Object-oriented programming inherits that worldview and encapsulates and refines it into classes, objects, inheritance, and composition. An object is a named space; a method is an operation performed on that space. OOP is rich in spatial metaphors such as containment, hierarchy, nesting, and structure, but comparatively weak in temporal ones such as events, evolution, adjudication, and causality.
 
 As software engineering has developed, however, almost all of its greatest engineering complexity has turned out to be temporal: concurrency, distributed systems, consistency, transactions, messaging, timeouts, synchronization.
 
@@ -29,7 +29,7 @@ $$
 State_1 \rightarrow State_2 \rightarrow State_3
 $$
 
-Causality becomes privatized and fragmented. Each object owns a slice of state, mutates that state through its own methods, or reaches into other objects through callbacks and side effects.
+Causality becomes privatized and fragmented. Each object owns a slice of state, mutates that state through its own methods, or reaches into other objects through callbacks and side effects (a change in spatial content).
 
 History is therefore split into countless fragments scattered across private object space. No unified causal narrative protects continuity of identity.
 
@@ -37,7 +37,7 @@ Spatial models optimize for static clarity: clean boundaries, clear hierarchies,
 
 When a fundamentally temporal problem is forced into a spatial structure, time gets fragmented, hidden, and privatized.
 
-At bottom, this is what it means to model time through space.
+At bottom, this is coupling the temporal dimension through spatial modeling.
 
 ---
 
@@ -45,7 +45,7 @@ At bottom, this is what it means to model time through space.
 
 > Dual World Theory asserts that any system that persists through time must distinguish **how world facts are formed** from **how the world is perceived and presented**.
 
-Any complex system that must continue to exist while continuously exchanging information with the outside world faces two simultaneous requirements:
+Any complex system that must persist through time while continuously exchanging information with the outside world faces two simultaneous requirements:
 
 1. It must preserve the continuity of its own history.
 2. It must keep absorbing external change.
@@ -56,7 +56,7 @@ A persistent world must therefore keep incorporating new change into an existing
 
 Under that pressure, two cooperating mechanisms emerge:
 
-- **Causal Layer**: receives events, interprets them, adjudicates relational change, and maintains an explainable history of facts. Its core assets are pending events, adjudication rules, and fact history. It corresponds to the **temporal dimension** of the system: irreversibility, sequence, and causal continuity.
+- **Causal Layer**: receives events, interprets them, adjudicates relational change, and maintains an explainable history of facts. Its core assets are fact history and adjudication rules, with pending events entering adjudication as input. It corresponds to the **temporal dimension** of the system: irreversibility, sequence, and causal continuity.
 - **Perception Layer**: senses the environment, processes change, and produces experience. It translates external change into usable signals and turns facts into projection and presentation. It corresponds to the **spatial dimension**: simultaneous perception, parallel presentation, and rich local feedback.
 
 Together they form a feedback loop:
@@ -75,7 +75,7 @@ There is an old philosophical question: what is the world made of? One answer po
 
 State answers one question: "What is the world like right now?" But any system that persists must also answer: "Why did the world become this way?"
 
-Therefore, the essence of the Causal Layer is to preserve **historical continuity** and **causal explainability**. State is merely the current projection of historical facts — if the events that produced the state are missing, the state itself loses most of its meaning.
+Therefore, the essence of the Causal Layer is to preserve **historical continuity** and **causal explainability**. State is merely the current projection of historical facts — if the events that produced the state are missing, the state itself becomes meaningless.
 
 The external world is inherently disordered, concurrent, and potentially conflicting. The Causal Layer turns external change into stable, traceable history through **adjudication**:
 
@@ -97,7 +97,7 @@ Perception components are organized in space. Spatial hierarchy replaces call ch
 
 The Perception Layer only reads facts and maintains local state, so it is naturally race-free. Many components can unfold in parallel.
 
-The only constraint is at the boundary. When a new fact arrives, the Perception Layer must acknowledge the latest version and switch quickly.
+The only constraint is at the handoff point. When a new fact arrives, the Perception Layer must acknowledge the latest version and switch quickly.
 
 ---
 
@@ -121,7 +121,7 @@ You can understand it as:
 
 > **A macroscopic system may contain a large number of parallel changes, but if those changes are to constitute a stable world, they must eventually be folded into the same explainable history.**
 
-Two people swing swords at the same time. Two bullets hit at the same time. Two threads run at the same time. To local observers, these events may appear simultaneous. But if the system must produce outcomes, stabilize state, and establish facts, it must eventually settle on an explainable causal ordering.
+Two people swing swords at the same time. Two bullets hit at the same time. Two threads run at the same time. To local observers, these events may appear simultaneous — but that simply means their order has not yet been resolved. If the system must produce outcomes, stabilize state, and establish facts, it must eventually settle on an explainable causal ordering.
 
 That is why **adjudication is unavoidable**.
 
@@ -132,7 +132,7 @@ A hits B
 B hits A
 ```
 
-The Causal Layer still has to answer:
+They appear to happen simultaneously. Yet the Causal Layer still has to answer:
 
 - Who dies first?
 - Can post-death skills still trigger?
@@ -144,9 +144,9 @@ Even if the animation, effects, and player perception all suggest simultaneity, 
 
 The same principle appears elsewhere:
 
-- **Version control**: if two developers edit the same line, Git may try to merge automatically, but unresolved conflicts still require adjudication.
 - **Database transactions**: CPUs, networks, and requests may run in parallel, but the database still needs an authoritative ordering.
-- **Law**: two people may accuse each other, but a court still has to produce a narratable chain of facts.
+- **Version control**: if two developers edit the same line, Git may try to merge automatically, but unresolved conflicts still require human adjudication.
+- **Law**: two people may accuse each other, but a court still has to produce a narratable chain of facts, because social order and the public both need a "factual version".
 
 The word **macroscopic** is crucial. At microscopic scales, the following may indeed exist:
 
