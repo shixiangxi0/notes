@@ -40,7 +40,7 @@ const sidebars = {
         {
           type: 'category',
           label: labels.preface,
-          collapsed: false,
+          collapsed: true,
           link: {
             type: 'doc',
             id: 'dual-world-theory/前言/index',
