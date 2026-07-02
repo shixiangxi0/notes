@@ -66,7 +66,7 @@ Adjudication rules are essentially stateless pure functions. Given an event and 
 
 From the perspective of time, the Causal Layer does not recognize "simultaneity." Events that appear concurrent are arranged into a sequence by the ordering mechanism before adjudication; the rule sees one input after another, never concurrency. This resonates with the functional-programming worldview: no true simultaneity, only mappings from input to output.
 
-Locks, CAS, and similar concurrency primitives were born from the von Neumann shared-memory model: multiple execution streams read and write the same memory concurrently, so mechanisms are needed to protect that memory from corruption. From the causal perspective, competition and ordering are handled by the system ordering mechanism, and business code no longer directly faces these primitives.
+Locks, CAS, and similar concurrency primitives were born from the von Neumann shared-memory model: multiple execution streams read and write the same memory concurrently, so mechanisms are needed to protect that memory from corruption. From the causal perspective, competition and ordering are handled by the system ordering mechanism. These concurrency primitives are unnecessary at the application layer and should not be exposed there.
 
 <details>
 <summary>Engineering detail</summary>
@@ -77,7 +77,7 @@ Levels at which the ordering mechanism can be implemented:
 - **Language / runtime level**: single-threaded event loops are naturally lock-free; multi-threaded runtimes may still need locks internally.
 - **Distributed level**: global order is reached through message queues and consensus protocols.
 
-Conclusion: the application layer is lock-free; whether the lower layer is lock-free depends on the implementation. This event-driven structure resembles the Actor model, but Actor rules are scattered across individual actors, whereas dual-world theory emphasizes a unified fact history and eventual causal consistency.
+The application layer is lock-free; whether the lower layer is lock-free depends on the implementation. This event-driven structure resembles the Actor model, but Actor rules are scattered across individual actors, whereas dual-world theory emphasizes a unified fact history and eventual causal consistency.
 
 </details>
 
@@ -105,7 +105,7 @@ entity_dead (fact)
 Propagation: deathrattle, QTE, loot drop, quest update, experience gain, level-up, plot trigger (new events)
 ```
 
-Adjudication and propagation are two sides of the same coin:
+Adjudication and propagation:
 
 > **Adjudication collapses uncertainty into facts; propagation lets facts reopen uncertainty.**
 
@@ -229,7 +229,7 @@ For the Causal Layer to operate reliably, it must have four properties:
 
 **Convergence**: Any causal propagation within a finite scope must end in finite time.
 
-Convergence is the most important of the four; the others exist mainly to guarantee it. It is the fundamental assurance that the world can run stably. See [Eventual Causal Consistency](/docs/dual-world-theory/theory#eventual-causal-consistency).
+Convergence is the most important; the others exist mainly to guarantee it. It is the fundamental assurance that the world can run stably. See [Eventual Causal Consistency](/docs/dual-world-theory/theory#eventual-causal-consistency).
 
 ---
 
