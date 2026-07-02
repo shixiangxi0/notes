@@ -7,8 +7,6 @@ slug: /dual-world-theory/theory
 
 ## Background: Von Neumann and OOP
 
-> We encode time in space, and pay in complexity.
-
 The von Neumann model is built around memory, state, instructions, and state transitions. Memory is spatial; data lives at addresses; computation is expressed as operations over that space. At a deep level, a program describes what exists in memory at a given moment.
 
 That model is extraordinarily powerful, but it is also, fundamentally, a **spatial metaphor**.
@@ -142,13 +140,11 @@ They appear to happen simultaneously. Yet the Causal Layer still has to answer:
 
 Even if the animation, effects, and player perception all suggest simultaneity, the system must still adjudicate.
 
-The same principle appears elsewhere:
-
 - **Database transactions**: CPUs, networks, and requests may run in parallel, but the database still needs an authoritative ordering. Otherwise money can vanish into thin air, state can corrupt, and the world can lose fidelity.
 - **Version control**: if two developers edit the same line, Git may try to merge automatically, but unresolved conflicts still require human adjudication.
+- **Law**: two people may accuse each other, but a court still has to produce a narratable chain of facts, because social order and the public both need a "factual version".
 - **Operating systems**: thousands of processes compete for CPU, memory, and IO at the same time. In the physical world interrupts fire in parallel, schedulers dispatch in parallel, and resource requests overlap, but the operating system must adjudicate execution order. Otherwise deadlocks freeze the machine, starvation leaves tasks waiting forever, and the system collapses.
 - **Blockchain**: nodes around the world broadcast transactions and race to produce blocks simultaneously. Messages arrive out of order, nodes act in parallel, and proposals conflict, but the consensus mechanism must adjudicate which chain is the authoritative version. Otherwise double-spending empties accounts, forks split the ledger, and trust collapses.
-- **Law**: two people may accuse each other, but a court still has to produce a narratable chain of facts, because social order and the public both need a "factual version".
 
 The word **macroscopic** is crucial. At microscopic scales, the following may indeed exist:
 
